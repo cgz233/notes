@@ -6,6 +6,8 @@
 
 - [我的个人网站](https://www.cgz233.cn)
 
+- [GithubPages笔记页](https://www.xiaochen.live)
+
 - [JavaNotes上部分](notes/JavaNotes上部分.md)
 
 - [JavaNotes中部分](notes/JavaNotes中部分.md)

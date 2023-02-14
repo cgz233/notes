@@ -17,5 +17,3 @@
 - [KotlinNotes](notes/KotlinNotes.md)
 
 - [GitNotes](notes/GitNotes.md)
-
-![](pic/公众号.bmp/)

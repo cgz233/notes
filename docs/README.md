@@ -6,16 +6,16 @@
 
 - [我的个人网站](https://www.cgz233.cn)
 
-- [JavaNotes上部分](JavaNotes上部分.md)
+- [JavaNotes上部分](notes/JavaNotes上部分.md)
 
-- [JavaNotes中部分](JavaNotes中部分.md)
+- [JavaNotes中部分](notes/JavaNotes中部分.md)
 
-- [JavaNotes下部分](JavaNotes下部分.md)
+- [JavaNotes下部分](notes/JavaNotes下部分.md)
 
-- [Android开发笔记](AndroidNotes.md)
+- [Android开发笔记](notes/AndroidNotes.md)
 
-- [KotlinNotes](KotlinNotes.md)
+- [KotlinNotes](notes/KotlinNotes.md)
 
-- [GitNotes](GitNotes.md)
+- [GitNotes](notes/GitNotes.md)
 
 <img src="pic/公众号.bmp/" style="zoom: 67%;" />

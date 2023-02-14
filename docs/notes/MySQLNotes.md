@@ -158,6 +158,21 @@ create table emp(
 ) comment '员工表';
 ```
 
+#### 修改
+
+- 添加字段：`ALTER TABLE 表名 ADD 字段名 类型 (长度) [COMMENT 注释] [约束]; `
+- 修改数据类型：`ALTER TABLE 表名 MODIFY 字段名 新数据类型 (长度); `
+- 修改字段名和字段类型：`ALTER TABLE 表名 CHANGE 旧字段名 新字段名 类型 (长度) [COMMENT 注释] [约束]; `
+- 删除字段：`ALTER TABLE 表名 DROP 字段名; `
+- 修改表名：`ALTER TABLE 表名 RENAME TO 新表名;`
+
+#### 删除
+
+- 删除表：`DROP TABLE [IF EXISTS] 表名;`
+- 删除指定表, 并重新创建表（格式化表）：`TRUNCATE TABLE 表名;`
+
+
+
 
 
 

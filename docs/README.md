@@ -18,4 +18,4 @@
 
 - [GitNotes](notes/GitNotes.md)
 
-<img src="pic/公众号.bmp/" style="zoom: 67%;" />
+![](pic/公众号.bmp/)

@@ -1,8 +1,4 @@
-# XiaoChenのNotes
-
-> by.XiaoChen
->
-> 此仓库记录我的学习笔记
+# Notes-XiaoChen
 
 - [我的个人网站](https://www.cgz233.cn)
 - [JavaNotes上部分](notes/JavaNotes上部分.md)

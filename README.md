@@ -18,6 +18,8 @@
 
 - [KotlinNotes](docs/notes/KotlinNotes.md)
 
+- [MySQLNotes](docs/notes/MySQLNotes.md)
+
 - [GitNotes](docs/notes/GitNotes.md)
 
 ![](docs/pic/公众号.bmp)

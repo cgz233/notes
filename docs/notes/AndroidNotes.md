@@ -1292,7 +1292,15 @@ public class ButtonEnableActivity extends AppCompatActivity implements View.OnCl
 - 关闭旧页面的方法调用顺序为：
   - onPause→onStop→onDestroy
 
-<img src="https://pb.nichi.co/owner-bulb-alien" style="zoom: 67%;" /> 
+```mermaid
+graph LR
+	A([不存在]) --> |onCreate| B([初始状态])
+	B --> |onDestroy| A
+	B --> |onStart| C([就绪状态])
+	C --> |onStop| B
+	C --> |onResume| D([活跃状态])
+	D --> |onPause| C
+```
 
 **相关文章**
 

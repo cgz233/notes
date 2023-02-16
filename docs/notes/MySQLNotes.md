@@ -14,7 +14,7 @@
 
   2. cmd指令：
 
-     ```
+     ```powershell
      mysql [-h 127.0.0.1] [-P 3306] -u root -p
      
      参数：
@@ -340,12 +340,16 @@ create table emp(
 ```sql
 # 查询年龄为20,21,22,23岁的员工信息
 select * from emp where age in(20,21,22,23);
+
 # 查询性别为 男 ，并且年龄在 20-40 岁(含)以内的姓名为三个字的员工
 select * from emp where gender = '男' and (age between 20 and 40) and name like '___';
+
 # 统计员工表中, 年龄小于60岁的 , 男性员工和女性员工的人数
 select gender, count(*) from emp where age < 60 group by gender;
+
 # 查询所有年龄小于等于35岁员工的姓名和年龄，并对查询结果按年龄升序排序，如果年龄相同按入职时间降序排序
 select name, age from emp where age <= 35 order by age, entrydate desc;
+
 # 查询性别为男，且年龄在20-40 岁(含)以内的前5个员工信息，对查询的结果按年龄升序排序，年龄相同按入职时间升序排序
 select * from emp where gender = '男' and age between 20 and 40  order by age, entrydate desc limit 5;
 ```
@@ -389,4 +393,219 @@ select * from emp where gender = '男' and age between 20 and 40  order by age, 
   LIMIT
   	分页参数
   ```
+
+## DCL
+
+### 管理用户
+
+- 查询用户：`select * from mysql.user;`
+- 创建用户：`CREATE USER '用户名'@'主机名' IDENTIFIED BY '密码';`
+- 修改用户密码：`ALTER USER '用户名'@'主机名' IDENTIFIED WITH mysql_native_password BY '新密码';`
+- 删除用户：`DROP USER '用户名'@'主机名';`
+
+注意事项：
+
+- 在MySQL中需要通过用户名@主机名的方式，来唯一标识一个用户
+- 主机名可以使用`%`通配，表示可以在任意主机访问
+- 这类SQL开发人员操作的比较少，主要是DBA（Database Administrator 数据库管理员）使用
+
+### 权限控制
+
+- MySQL中定义了很多种权限，但是常用的就以下几种：
+
+  |权限 |说明|
+  |--|--|
+  |ALL,ALL PRIVILEGES |所有权限|
+  |SELECT |查询数据|
+  |INSERT |插入数据|
+  |UPDATE |修改数据|
+  |DELETE |删除数据|
+  |ALTER| 修改表|
+  |DROP| 删除数据库/表/视图|
+  |CREATE |创建数据库/表|
+  
+  上述只是简单罗列了常见的几种权限描述，其他权限描述及含义，可以直接参考[官方文档](https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html)
+  
+- 查询权限：`SHOW GRANTS FOR '用户名'@'主机名';`
+
+- 授予权限：`GRANT 权限列表 ON 数据库名.表名 TO '用户名'@'主机名';`
+
+- 撤销权限：`REVOKE 权限列表 ON 数据库名.表名 FROM '用户名'@'主机名';`
+
+注意事项：
+
+- 多个权限之间，使用逗号分隔
+- 授权时，数据库名和表名可以使用`*`进行通配，代表所有
+
+
+
+# 函数
+
+## 字符串函数
+
+- MySQL中内置了很多字符串函数，常用的几个如下：
+
+  |函数| 功能|
+  |--|--|
+  |CONCAT(S1,S2,...Sn) |字符串拼接，将S1,S2,...Sn拼接成一个字符串|
+  |LOWER(str) |将字符串str全部转为小写|
+  |UPPER(str) |将字符串str全部转为大写|
+  |LPAD(str,n,pad) |左填充，用字符串pad对str的左边进行填充，达到n个字符串长度|
+  |RPAD(str,n,pad) |右填充，用字符串pad对str的右边进行填充，达到n个字符串长度|
+  |TRIM(str) |去掉字符串头部和尾部的空格|
+  |SUBSTRING(str,start,len) |返回从字符串str从start位置起的len个长度的字符串|
+
+- 演示如下：
+
+  ```sql
+  # concat : 字符串拼接 以下输出HelloMySQL
+  select concat('Hello', 'MySQL');
+  
+  # lower : 全部转小写 以下输出hello
+  select concat('Hello');
+  
+  # upper : 全部转大写 以下输出MYSQL
+  select upper('MySQL');
+  
+  # lpad : 左填充 以下输出---01
+  select lpad('01', 5, '-');
+  
+  # rpad : 右填充 以下输出01---
+  select rpad('01', 5, '-');
+  
+  # trim : 去除空格 以下输出Hello MySQL
+  select trim(' Hello MySQL ');
+  
+  # substring : 截取子字符串 以下输出Hello
+  select substring('Hello MySQL', 1, 5);
+  
+  # 由于业务需求变更，企业员工的工号，统一为5位数，目前不足5位数的全部在前面补0。比如：1号员工的工号应该为00001
+  update emp set workno = lpad(workno, 5, '0');
+  ```
+
+## 数值函数
+
+- 常见的数值函数如下：
+
+  |函数 |功能|
+  |--|--|
+  |CEIL(x) |向上取整|
+  |FLOOR(x)| 向下取整|
+  |MOD(x,y) |返回x/y的模|
+  |RAND()| 返回0~1内的随机数|
+  |ROUND(x,y) |求参数x的四舍五入的值，保留y位小数|
+
+- 演示如下：
+
+  ```sql
+  # ceil：向上取整 以下输出2
+  select ceil(1.1);
+  
+  # floor：向下取整 以下输出1
+  select floor(1.9);
+  
+  # mod：取模 以下输出3
+  select mod(7, 4);
+  
+  # rand：获取随机数 以下输出0-1任意数
+  select rand();
+  
+  # round：四舍五入 以下输出2.35
+  select round(2.345, 2);
+  
+  # 通过数据库的函数，生成一个六位数的随机验证码
+  # 获取随机数可以通过rand()函数，但是获取出来的随机数是在0-1之间的，所以可以在其基础上乘以1000000，然后舍弃小数部分，如果长度不足6位，补0
+  select lpad(round(rand()*1000000, 0), 6, '0');
+  ```
+
+## 日期函数
+
+- 常见的日期函数如下：
+
+  |函数 |功能|
+  |--|--|
+  |CURDATE() |返回当前日期|
+  |CURTIME() |返回当前时间|
+  |NOW() |返回当前日期和时间|
+  |YEAR(date) |获取指定date的年份|
+  |MONTH(date) |获取指定date的月份|
+  |DAY(date) |获取指定date的日期|
+  |DATE_ADD(date, INTERVAL exprtype) |返回一个日期/时间值加上一个时间间隔expr后的时间值|
+  |DATEDIFF(date1,date2) |返回起始时间date1 和 结束时间date2之间的天数|
+
+- 演示如下：
+
+  ```sql
+  # curdate：当前日期 2023-02-16
+  select curdate();
+  
+  # curtime：当前时间 14:56:06
+  select curtime();
+  
+  # now：当前日期和时间 2023-02-16 14:56:28
+  select now();
+  
+  # YEAR , MONTH , DAY：当前年、月、日
+  select year(now());
+  select month(now());
+  select day(now());
+  
+  # date_add：增加指定的时间间隔
+  select date_add(now(), interval 30 day);
+  
+  # datediff：获取两个日期相差的天数
+  select datediff('2023-2-1', '2022-1-1');
+  
+  # 查询所有员工的入职天数，并根据入职天数倒序排序。
+  # 思路：入职天数，就是通过当前日期 - 入职日期，所以需要使用datediff函数来完成
+  select emp.name, datediff(curdate(), emp.entrydate) as 'entrydays' from emp order by entrydays desc ;
+  ```
+
+## 流程函数
+
+- 流程函数也是很常用的一类函数，可以在SQL语句中实现条件筛选，从而提高语句的效率
+
+- 常见的流程函数如下：
+
+  |函数| 功能|
+  |--|--|
+  |IF(value, t, f) |如果value为true，则返回t，否则返回f|
+  |IFNULL(value1, value2) |如果value1不为空，返回value1，否则返回value2|
+  |CASE WHEN [val1] THEN [res1] ... ELSE [default] END |如果val1为true，返回res1，... 否则返回default默认值|
+  |CASE [expr] WHEN [val1] THEN [res1] ... ELSE [default] END |如果expr的值等于val1，返回res1，... 否则返回default默认值|
+
+- 演示如下：
+
+  ```sql
+  # if 以下返回'NO'
+  select if(false, 'OK', 'NO');
+  
+  # ifnull 以下分别返回'Ok'、''、'Default'
+  select ifnull('Ok','Default');
+  select ifnull('','Default');
+  select ifnull(null,'Default');
+  
+  # case when then else end
+  # 需求: 查询emp表的员工姓名和工作地址 (北京/上海 ----> 一线城市 , 其他 ----> 二线城市)
+  select
+      name,
+      (case workaddress when '北京' then '一线城市' when '上海' then '一线城市' else '二线城市' end) as '工作地址'
+  from emp;
+  
+  # 案例: 统计班级各个学员的成绩，展示的规则如下:
+  # >= 85，展示优秀
+  # >= 60，展示及格
+  # 否则，展示不及格
+  select
+      id,
+      name,
+      (case when math >= 85 then '优秀' when math >= 60 then '及格' else '不及格' end) as '数学',
+      (case when english >= 85 then '优秀' when english >= 60 then '及格' else '不及格' end) as '英语',
+      (case when chinese >= 85 then '优秀' when chinese >= 60 then '及格' else '不及格' end) as '语文'
+  from score;
+  ```
+
+
+
+# 约束
 

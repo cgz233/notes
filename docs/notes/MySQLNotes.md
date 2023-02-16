@@ -609,4 +609,3 @@ select * from emp where gender = '男' and age between 20 and 40  order by age, 
 
 # 约束
 
-123

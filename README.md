@@ -22,4 +22,5 @@
 
 - [GitNotes](docs/notes/GitNotes.md)
 
-![](docs/pic/公众号.bmp)
+![](https://image.cgz233.cn/images/gzh.bmp)
+

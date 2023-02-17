@@ -1,6 +1,5 @@
 # Notes-XiaoChen
 
-- [我的个人网站](https://www.cgz233.cn)
 - [JavaNotes上部分](notes/JavaNotes上部分.md)
 - [JavaNotes中部分](notes/JavaNotes中部分.md)
 - [JavaNotes下部分](notes/JavaNotes下部分.md)

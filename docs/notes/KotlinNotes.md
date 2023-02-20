@@ -1158,11 +1158,111 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
 
 
 
+# 字符串操作-数字类型-标准库函数
 
+## 字符串操作
 
+- 字符串截取，substring函数支持IntRange类型（表示一个整数范围的类型）的参数，until创建的范围不包括上限值
 
+  ```kotlin
+  const val NAME = "Jimmy's friend"
+  fun main() {
+      val index = NAME.indexOf('\'')
+      //val str = NAME.substring(0, index)
+      val str = NAME.substring(0 until index)
+      println(str)
+  }
+  ```
 
+- Spit函数返回的是List集合数据，List集合又支持解构语法特性，它允许你在一个表达式里给多个变量赋值，解构常用来简化变量的赋值
 
+  ```kotlin
+  const val NAMES = "Jack,Jim,Tom"
+  fun main() {
+      val (Jack, Jim, Tom) = NAMES.split(",")
+      println("$Jack $Jim $Tom")
+  }
+  ```
+
+- replace字符串替换
+
+  ```kotlin
+  fun main() {
+      // 加密替换一个字符串
+      val str1 = "The people's Republic of China."
+      // 第一个参数是正则表达式，用来决定要替换哪些字符
+      // 第二个参数是匿名函数，用来确定该如何替换正则表达式搜索到的字符
+      val str2 = str1.replace(Regex("[aeiou]")) {
+          when(it.value){
+              "a" -> "8"
+              "e" -> "6"
+              "i" -> "9"
+              "o" -> "1"
+              "u" -> "3"
+              else -> it.value
+          }
+      }
+      println(str1)
+      println(str2)
+  }
+  ```
+
+- 字符串比较
+
+  在Kotlin中，用==检查两个字符串中的字符是否匹配，用===检查两个变量是否指向内存堆上同一对象，而在Java中==做引用比较，做结构比较时用equals方法
+
+  ```kotlin
+  fun main() {
+      val str1 = "Jack"
+      val str2 = "Jack"
+      val str3 = "jack".capitalize()
+      println(str1 == str2) //true
+      println(str1 === str2) //true
+      println(str1 === str3) //false
+  }
+  ```
+
+- 遍历字符
+
+  ```kotlin
+  fun main() {
+      "The People's Republic of China".forEach {
+          print(it)
+      }
+  }
+  ```
+
+## 数字类型
+
+- 安全转换函数
+
+  Kotlin提供了toDoubleOrNull和toIntOrNulll这样的安全转换函数，如果数值不能正确转换，与其触发异常不如干脆返回null值
+
+  ```kotlin
+  fun main() {
+      //val num1: Int = "8.687".toInt() // 抛出NumberFormatException
+      val num1: Int? = "8.687".toIntOrNull() // 返回null
+      println(num1)
+  }
+  ```
+
+- Double转Int
+
+  精度损失与四舍五入
+
+  ```kotlin
+  println(8.985.toInt()) // 8
+  println(8.985.roundToInt()) // 9
+  ```
+
+- Double类型格式化
+
+  格式化字符串是一串特殊字符，它决定该如何格式化数据
+
+  ```kotlin
+  val s = "%.2f".format(8.98765)
+  println(s) // 8.99
+  ```
 
 
 

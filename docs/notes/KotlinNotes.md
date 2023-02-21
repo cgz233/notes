@@ -11,9 +11,7 @@
 
 
 
-# 变量和函数
-
-## 变量
+# 变量
 
 - val 不可变的变量(value) 对应java中final
 - var 可变的变量(variable) 对应java中非final
@@ -55,7 +53,11 @@
     "hello, $name. nice to meet you!"
     ```
 
-## 函数
+
+
+# 函数
+
+## 基础
 
 - main函数
 
@@ -162,6 +164,197 @@
       }
   }
   ```
+
+## 标准函数
+
+- Kotlin中的标准函数指的是`Standard.kt`文件中定义的函数
+
+- let函数：主要作用就是配合`?.`操作符进行判空操作，详细看空指针检查
+
+  let函数能使某个变量作用于其lambda表达式里，让it关键字能引用它。let与apply比较，let会把接收者传给lambda，而apply什么都不传，匿名函数执行完，appy会返回当前接收者，而let会返回lambda的最后一行
+
+  ```kotlin
+  fun main() {
+      val result = listOf(3, 2, 1).first().let {
+          it * it
+      }
+      println(result)
+      
+      println(formatGreeting(null))
+  }
+  
+  fun formatGreeting(name: String?): String {
+      return name?.let {
+          "Welcome,$it."
+      } ?: "What's your name?"
+  }
+  ```
+
+- with函数：
+
+  with函数接收两个参数：第一个参数是一个任意类型的对象，第二个参数是一个Lambda表达式
+
+  with函数会在Lambda表达式中提供第一个参数对象的上下文，并使用Lambda表达式的最后一行代码作为返回值返回
+
+  ```kotlin
+  val result = with(obj) {
+      // 这里是obj的上下文
+      "value" // with函数的返回值
+  }
+  ```
+
+  它的作用是连续调用一个对象的多个方法时让代码变得精简
+
+  ```kotlin
+  // 不使用with
+  val list = listOf<String>("Apple", "Banana", "Orange", "Pear", "Grape")
+  val builder = StringBuilder()
+  builder.append("Start eating fruits.\n")
+  for (fruits in list) {
+      builder.append(fruits).append("\n")
+  }
+  builder.append("Ate all fruits")
+  val result = builder.toString()
+  println(result)
+  ```
+
+  ```kotlin
+  // 使用with函数精简
+  val list = listOf<String>("Apple", "Banana", "Orange", "Pear", "Grape")
+  val result = with(StringBuffer()){
+      append("Start eating fruits.\n")
+      for (fruits in list) {
+          append(fruits).append("\n")
+      }
+      append("Ate all fruits")
+      toString()
+  }
+  println(result)
+  ```
+
+- run函数：
+
+  和with类似，但run函数通常不会直接调用，而是在某个对象的基础上调用
+
+  run只接收一个Lambda参数，并且会在Lambda表达式中提供调用对象的上下文
+
+  ```kotlin
+  val result = obj.run {
+  	// 这里是obj的上下文
+      "value" // run函数的返回值
+  }
+  ```
+
+  ```kotlin
+  // 使用run改写
+  val list = listOf<String>("Apple", "Banana", "Orange", "Pear", "Grape")
+  val result = StringBuffer().run {
+      append("Start eating fruits.\n")
+      for (fruits in list) {
+          append(fruits).append("\n")
+      }
+      append("Ate all fruits")
+      toString()
+  }
+  println(result)
+  ```
+
+- apply函数：
+
+  和run类似，也要在某个函数上调用，只接收一个Lambda参数，也会在Lambda提供调用对象的上下文
+
+  但apply无法指定返回值，而是自动返回调用对象本身
+
+  ```kotlin
+  val result = obj.apply {
+      // 这里是obj的上下文
+  }
+  // result == obj
+  ```
+
+  ```kotlin
+  // 使用apply改写
+  val list = listOf<String>("Apple", "Banana", "Orange", "Pear", "Grape")
+  val result = StringBuffer().apply{
+      append("Start eating fruits.\n")
+      for (fruits in list) {
+          append(fruits).append("\n")
+      }
+      append("Ate all fruits")
+  }
+  println(result.toString())
+  ```
+
+- also函数和let函数功能相似，和let一样，also也是把接收者作为值参传给lambda，但有一点不同：also返回接收者对象，而let返回lambda结果。因为这个差异，also尤其适合针对同一原始对象，利用副作用做事，既然also返回的是接收者对象，你就可以基于原始接收者对象执行额外的链式调用
+
+- 和其他标准函数有点不一样，takeIf函数需要判断lambda中提供的条件表达式，给出true或false结果，如果判断结果是true，从takeIf函数返回接收者对象，如果是false,则返回null。如果需要判断某个条件是否满足，再决定是否可以赋值变量或执行某项任务，takeIf就非常有用，概念上讲，takeIf函数类似于if语句，但它的优势是可以直接在对象实例上调用，避免了临时变量赋值的麻烦
+
+  ```kotlin
+  val fileContent = File("E://a.txt")
+      .takeIf { it.canRead() && it.canWrite() }
+      ?.readText()
+  println(fileContent)
+  ```
+
+- takeIf辅助函数takeUnless,只有判断你给定的条件结果是false时，takeUnless才会返回原始接收者对象
+
+  ```kotlin
+  val fileContent = File("E://a.txt")
+      .takeUnless { it.isHidden }
+      ?.readText()
+  println(fileContent)
+  ```
+
+## 定义静态方法
+
+- 像工具类这种功能，Kotlin推荐使用单例类来创建
+
+- ```kotlin
+  object Util {
+      fun doAction() {
+          println("do action")
+      }
+  }
+  ```
+  
+  这里`doAction()`方法虽然不是静态方法，但可以直接使用`Util.doAction()`调用
+  
+- 如果想让一个方法变成类似于静态方法调用的方式，就可以使用`companion object {}`包围方法
+
+  ```kotlin
+  class Util {
+      companion object {
+          fun doAction() {
+              println("do action")
+          }
+      }
+  }
+  ```
+
+  doAction()方法其实也并不是静态方法，companion object这个关键字实际上会在Util类的内部创建一个伴生类，而doAction()方法就是定义在这个伴生类里面的实例方法。只是Kotlin会保证Util类始终只会存在一个伴生类对象，因此调用Util.doAction()方法实际上就是调用了Util类中伴生对象的doAction()方法
+
+- 如果想要真正的静态方法，有两种方法：注解和顶层方法
+
+  注解：直接在单例类或companion object中的方法上加上@JvmStatic注解，就会成为真正的静态方法
+
+  @JvmStatic只能加在单例类或companion object中，加在普通方法会报错
+
+  ```kotlin
+  companion object {
+      @JvmStatic 
+      fun doAction() {
+          println("do action")
+      }
+  }
+  ```
+
+  顶层方法指的就是那些没有定义在任何类中的方法，Kotlin 编译器会将所有的顶层方法全部编译成静态方法
+
+  在Kotlin中可以直接调用顶层方法，不用管包名路径，也不用创建实例，直接键入doSomething()即可
+
+  在Java中调用顶层方法，因为Kotlin 编译器会自动创建一个叫作`文件名Kt` 的Java 类，所有调用的话就是`文件名Kt.doSomething()`
+
+
 
 # 逻辑控制
 
@@ -1004,161 +1197,7 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
 
 
 
-# 标准函数和静态方法
-
-## 标准函数
-
-- Kotlin中的标准函数指的是`Standard.kt`文件中定义的函数
-
-- let函数：主要作用就是配合`?.`操作符进行判空操作，详细看空指针检查
-
-- with函数：
-
-  with函数接收两个参数：第一个参数是一个任意类型的对象，第二个参数是一个Lambda表达式
-
-  with函数会在Lambda表达式中提供第一个参数对象的上下文，并使用Lambda表达式的最后一行代码作为返回值返回
-
-  ```kotlin
-  val result = with(obj) {
-      // 这里是obj的上下文
-      "value" // with函数的返回值
-  }
-  ```
-
-  它的作用是连续调用一个对象的多个方法时让代码变得精简
-
-  ```kotlin
-  // 不使用with
-  val list = listOf<String>("Apple", "Banana", "Orange", "Pear", "Grape")
-  val builder = StringBuilder()
-  builder.append("Start eating fruits.\n")
-  for (fruits in list) {
-      builder.append(fruits).append("\n")
-  }
-  builder.append("Ate all fruits")
-  val result = builder.toString()
-  println(result)
-  ```
-
-  ```kotlin
-  // 使用with函数精简
-  val list = listOf<String>("Apple", "Banana", "Orange", "Pear", "Grape")
-  val result = with(StringBuffer()){
-      append("Start eating fruits.\n")
-      for (fruits in list) {
-          append(fruits).append("\n")
-      }
-      append("Ate all fruits")
-      toString()
-  }
-  println(result)
-  ```
-
-- run函数：
-
-  和with类似，但run函数通常不会直接调用，而是在某个对象的基础上调用
-
-  run只接收一个Lambda参数，并且会在Lambda表达式中提供调用对象的上下文
-
-  ```kotlin
-  val result = obj.run {
-  	// 这里是obj的上下文
-      "value" // run函数的返回值
-  }
-  ```
-
-  ```kotlin
-  // 使用run改写
-  val list = listOf<String>("Apple", "Banana", "Orange", "Pear", "Grape")
-  val result = StringBuffer().run {
-      append("Start eating fruits.\n")
-      for (fruits in list) {
-          append(fruits).append("\n")
-      }
-      append("Ate all fruits")
-      toString()
-  }
-  println(result)
-  ```
-
-- apply函数
-
-  和run类似，也要在某个函数上调用，只接收一个Lambda参数，也会在Lambda提供调用对象的上下文
-
-  但apply无法指定返回值，而是自动返回调用对象本身
-
-  ```kotlin
-  val result = obj.apply {
-      // 这里是obj的上下文
-  }
-  // result == obj
-  ```
-
-  ```kotlin
-  // 使用apply改写
-  val list = listOf<String>("Apple", "Banana", "Orange", "Pear", "Grape")
-  val result = StringBuffer().apply{
-      append("Start eating fruits.\n")
-      for (fruits in list) {
-          append(fruits).append("\n")
-      }
-      append("Ate all fruits")
-  }
-  println(result.toString())
-  ```
-
-## 定义静态方法
-
-- 像工具类这种功能，Kotlin推荐使用单例类来创建
-
-- ```kotlin
-  object Util {
-      fun doAction() {
-          println("do action")
-      }
-  }
-  ```
-
-  这里`doAction()`方法虽然不是静态方法，但可以直接使用`Util.doAction()`调用
-
-- 如果想让一个方法变成类似于静态方法调用的方式，就可以使用`companion object {}`包围方法
-
-  ```kotlin
-  class Util {
-      companion object {
-          fun doAction() {
-              println("do action")
-          }
-      }
-  }
-  ```
-
-  doAction()方法其实也并不是静态方法，companion object这个关键字实际上会在Util类的内部创建一个伴生类，而doAction()方法就是定义在这个伴生类里面的实例方法。只是Kotlin会保证Util类始终只会存在一个伴生类对象，因此调用Util.doAction()方法实际上就是调用了Util类中伴生对象的doAction()方法
-
-- 如果想要真正的静态方法，有两种方法：注解和顶层方法
-
-  注解：直接在单例类或companion object中的方法上加上@JvmStatic注解，就会成为真正的静态方法
-
-  @JvmStatic只能加在单例类或companion object中，加在普通方法会报错
-
-  ```kotlin
-  companion object {
-      @JvmStatic 
-      fun doAction() {
-          println("do action")
-      }
-  }
-  ```
-
-  顶层方法指的就是那些没有定义在任何类中的方法，Kotlin 编译器会将所有的顶层方法全部编译成静态方法
-
-  在Kotlin中可以直接调用顶层方法，不用管包名路径，也不用创建实例，直接键入doSomething()即可
-
-  在Java中调用顶层方法，因为Kotlin 编译器会自动创建一个叫作`文件名Kt` 的Java 类，所有调用的话就是`文件名Kt.doSomething()`
-
-
-
-# 字符串操作-数字类型-标准库函数
+# 字符串操作和数字类型
 
 ## 字符串操作
 

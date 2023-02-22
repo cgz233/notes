@@ -5143,6 +5143,306 @@ public class SendMmsActivity extends AppCompatActivity implements View.OnClickLi
 
 
 
+# 高级控件
+
+## 下拉列表
+
+### 下拉框Spinner
+
+- 有两种模式，一种下拉模式（dropdown），一种对话框模式（dialog），设置`android:spinnerMode`属性可以修改
+
+  ```xml
+  <Spinner
+      android:id="@+id/sp_dropdown"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:spinnerMode="dropdown" />
+  ```
+
+- 在Java代码中，Spinner还可以调用下列4个方法
+
+  - setPrompt：设置标题文字。注意对话框模式才显示标题，下拉模式不显示标题
+  - setAdapter：设置列表项的数据适配器
+  - setSelection：设置当前选中哪项。注意该方法要在setAdapter方法后调用setOnItemSelectedListener：设置下拉列表的选择监听器，该监听器要实现接口OnItemSelectedListener
+
+  使用步骤：
+
+  1. 创建一个集合来存储要展示的文字
+
+  2. 创建一个数组适配器ArrayAdapter，第一个参数传入上下文，第二个参数传入布局，可为android.R.layout.simple_list_item_1（这是一个
+
+     Android 内置的布局文件，里面只有一个TextView ，可用于简单地显示一段文本），第三个参数传入数组
+
+  3. 调用下拉框的setPrompt方法，传入数组适配器
+
+  4. 调用下拉框的setOnItemSelectedListener方法，设置点击事件监听，重写onItemSelected（选中之后执行）和onNothingSelected（什么也没选），补充逻辑
+
+  ```kotlin
+  class SpinnerDialogActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+      
+      private val startArray = listOf("水星", "金星", "地球", "火星", "木星", "土星")
+  
+      override fun onCreate(savedInstanceState: Bundle?) {
+          super.onCreate(savedInstanceState)
+          setContentView(R.layout.activity_spinner_dialog)
+  
+          // 声明一个下拉列表的数组适配器
+          val adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, startArray)
+          // 初始化下拉框
+          findViewById<Spinner>(R.id.sp_dialog).apply {
+              // 设置下拉框的标题。对话框模式才显示标题，下拉模式不显示标题
+              prompt = "请选择行星"
+              // 设置下拉框的数组适配器
+              setAdapter(adapter)
+              // 下拉列表默认显示第一项
+              setSelection(0)
+              // 给下拉框设置选择监听器，一旦用户选中某一项，就触发监听器的onItemSelected方法
+              onItemSelectedListener = this
+          }
+      }
+  
+      // 选中之后执行
+      override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+          ToastUtil.show(this, "您选择的是${startArray[position]}")
+      }
+  
+      // 什么也没选
+      override fun onNothingSelected(parent: AdapterView<*>?) {
+  
+      }
+  }
+  ```
+
+### 数组适配器ArrayAdapter
+
+- 最简单的适配器，只展示一行文字
+
+- 运用数组适配器分成下列步骤：
+  - 编写列表项的XML文件，内部布局只有一个TextView标签
+  - 调用ArrayAdapter的构造方法，填入待展现的字符串数组，以及列表项的XML文件（R.layout.item_select）
+  - 调用下拉框控件的setAdapter方法，传入第二步得到的适配器实例
+
+### 简单适配器SimpleAdapter
+
+- SimpleAdapter 允许在列表项中同时展示文本与图片
+
+- 集合当中的数据与条目布局的对应关系
+
+  <img src="https://image.cgz233.cn/images/202302212130252.png" alt="image-20230221213029898" style="zoom: 67%;" /> 
+
+- 使用步骤：
+
+  1. 分别创建图片和名称集合
+  2. 创建`List<? extends Map<String, ?>>`形式的集合，遍历图片和名称集合，将参数放入
+  3. 创建SimpleAdapter，SimpleAdapter的第一个参数为上下文，第二个参数为`List<? extends Map<String, ?>>`形式的集合，第三个参数为布局，第四个参数为集合第一个String的值，第五个参数为布局参数对应第四个参数id
+  4. 设置下拉框的adapter为刚创建的SimpleAdapter
+
+  ```kotlin
+  class SpinnerIconActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+  
+      private val iconArray = listOf(
+          R.drawable.shuixing, R.drawable.jinxing, R.drawable.diqiu,
+          R.drawable.huoxing, R.drawable.muxing, R.drawable.tuxing
+      )
+  
+      private val startArray = listOf("水星", "金星", "地球", "火星", "木星", "土星")
+  
+      override fun onCreate(savedInstanceState: Bundle?) {
+          super.onCreate(savedInstanceState)
+          setContentView(R.layout.activity_spinner_icon)
+  
+          initSpinnerForSimpleAdapter() // 初始化下拉框
+      }
+  
+      private fun initSpinnerForSimpleAdapter() {
+          // 声明一个映射对象的列表，用于保存行星的图标与名称配对信息
+          val list = ArrayList<Map<String, Any>>()
+          // 遍历数组，将数据添加到数组当中
+          iconArray.forEachIndexed { index, i ->
+              val map = mapOf("icon" to i, "name" to startArray[index])
+              list.add(map) // 把行星图标与名称的配对映射添加到列表
+          }
+          // 声明一个下拉列表的简单适配器，其中指定了图标与文本两组数据
+          val simpleAdapter = SimpleAdapter(
+              this,
+              list,
+              R.layout.item_simple,
+              arrayOf("icon", "name"),
+              intArrayOf(R.id.iv_icon, R.id.tv_name)
+          )
+          // 初始化下拉框
+          findViewById<Spinner>(R.id.sp_icon).apply {
+              prompt = "请选择行星" // 设置下拉框的标题
+              adapter = simpleAdapter // 设置下拉框的简单适配器
+              setSelection(0) // 设置默认选择第一个
+              onItemSelectedListener = this@SpinnerIconActivity // 设置监听
+          }
+      }
+      override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+          ToastUtil.show(this, "您选择的是${startArray[position]}")
+      }
+      override fun onNothingSelected(parent: AdapterView<*>?) {
+      }
+  }
+  ```
+
+## 列表类视图
+
+### 基本适配器BaseAdapter
+
+- Android提供了一种适应性更强的基本适配器BaseAdapter，它允许开发者在别的代码文件中进行逻辑处理
+
+- 条目与数据集合对应关系
+
+  <img src="https://image.cgz233.cn/images/202302222307614.png" alt="image-20230222230707085" style="zoom:67%;" /> 
+
+- 从BaseAdapter派生的数据适配器主要实现下面5个方法
+  - 构造函数：指定适配器需要处理的数据集合
+  - getCount：获取数据项的个数
+  - getItem：获取列表项的数据
+  - getItemId：获取列表项的编号
+  - getView：获取每项的展示视图，并操纵每项的内部控件
+
+实现步骤：
+
+- 数据类
+
+  ```kotlin
+  class Planet(val image: Int, val name: String, val desc: String) { // 行星图片、名称、描述
+  
+      companion object {
+          private val iconArray = arrayOf(
+              R.drawable.shuixing, R.drawable.jinxing, R.drawable.diqiu,
+              R.drawable.huoxing, R.drawable.muxing, R.drawable.tuxing
+          )
+  
+          private val nameArray = arrayOf("水星", "金星", "地球", "火星", "木星", "土星")
+  
+          private val descArray = arrayOf(
+              "水星是太阳系八大行星最内侧也是最小的一颗行星，也是离太阳最近的行星",
+              "金星是太阳系八大行星之一，排行第二，距离太阳0.725天文单位",
+              "地球是太阳系八大行星之一，排行第三，也是太阳系中直径、质量和密度最大的类地行星，距离太阳1.5亿公里",
+              "火星是太阳系八大行星之一，排行第四，属于类地行星，直径约为地球的53%",
+              "木星是太阳系八大行星中体积最大、自转最快的行星，排行第五。它的质量为太阳的千分之一，但为太阳系中其它七大行星质量总和的2.5倍",
+              "土星为太阳系八大行星之一，排行第六，体积仅次于木星"
+          )
+  
+          fun getDefaultList(): List<Planet> {
+              val planetList = arrayListOf<Planet>()
+              for (i in iconArray.indices) {
+                  planetList.add(Planet(iconArray[i], nameArray[i], descArray[i]))
+              }
+              return planetList
+          }
+      }
+  
+  }
+  ```
+
+1. 编写列表项的布局文件item_list.xml
+
+   ```xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:tools="http://schemas.android.com/tools"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal">
+       <ImageView
+           android:id="@+id/iv_icon"
+           android:layout_width="0dp"
+           android:layout_height="80dp"
+           android:layout_weight="1"
+           android:scaleType="fitCenter"
+           tools:src="@drawable/diqiu"/>
+       <LinearLayout
+           android:layout_width="0dp"
+           android:layout_height="match_parent"
+           android:layout_marginLeft="5dp"
+           android:layout_weight="3"
+           android:orientation="vertical">
+           <TextView
+               android:id="@+id/tv_name"
+           android:layout_width="match_parent"
+           android:layout_height="0dp"
+           android:layout_weight="1"
+           android:gravity="start|center"
+           android:textColor="@color/black"
+           android:textSize="20dp"
+           tools:text="地球"/>
+   
+           <TextView
+               android:id="@+id/tv_desc"
+               android:layout_width="match_parent"
+               android:layout_height="0dp"
+               android:layout_weight="2"
+               android:gravity="start|center"
+               android:textColor="@color/black"
+               android:textSize="13sp"
+               tools:text="地球是太阳系八大行星之一，排行第三，也是太阳系中直径、质量和密度最大的类地行星，距离太阳1.5亿公里"/>
+       </LinearLayout>
+   </LinearLayout>
+   ```
+
+2. 写个新的适配器继承BaseAdapter，实现对列表项的管理操作。需要编写适配器的三个方法：
+
+   1. 创建构造方法，传入列表项需要的数据列表
+   2. 重写getCount方法，返回列表项的个数
+   3. 重写getView方法，根据item_list.xml里面的布局，返回指定位置的列表项的视图内容
+
+   ```kotlin
+   class PlanetBaseAdapter(val mContext: Context, val mPlanetList: List<Planet>) : BaseAdapter() {
+       // 获取列表项的个数
+       override fun getCount(): Int {
+           return mPlanetList.size
+       }
+   
+       override fun getItem(position: Int): Any {
+           return mPlanetList[position]
+       }
+   
+       override fun getItemId(position: Int): Long {
+           return position.toLong()
+       }
+   
+       override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+           // 根据布局文件item_list.xml生成转换视图对象
+           val view = LayoutInflater.from(mContext).inflate(R.layout.item_list, null)
+           view.findViewById<ImageView>(R.id.iv_icon).setImageResource(mPlanetList[position].image)
+           view.findViewById<TextView>(R.id.tv_name).text = mPlanetList[position].name
+           view.findViewById<TextView>(R.id.tv_desc).text = mPlanetList[position].desc
+   
+           return view
+       }
+   }
+   ```
+
+3. 在页面代码中创建该适配器实例，并交给下拉框设置适配器
+
+   ```kotlin
+   class BaseAdapterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+       override fun onCreate(savedInstanceState: Bundle?) {
+           super.onCreate(savedInstanceState)
+           setContentView(R.layout.activity_base_adapter)
+           val baseAdapter = PlanetBaseAdapter(this, Planet.getDefaultList())
+           val sp_planet = findViewById<Spinner>(R.id.sp_planet)
+           sp_planet.apply {
+               adapter = baseAdapter
+               setSelection(0)
+               onItemSelectedListener = this@BaseAdapterActivity
+           }
+       }
+   
+       override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+           ToastUtil.show(this, "你选择的是${Planet.getDefaultList()[position].name}")
+       }
+   
+       override fun onNothingSelected(parent: AdapterView<*>?) {
+           TODO("Not yet implemented")
+       }
+   }
+   ```
+
 
 
 

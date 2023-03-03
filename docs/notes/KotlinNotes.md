@@ -354,6 +354,181 @@
 
   在Java中调用顶层方法，因为Kotlin 编译器会自动创建一个叫作`文件名Kt` 的Java 类，所有调用的话就是`文件名Kt.doSomething()`
 
+## 拓展函数
+
+- 定义一个方法，查询一个字符串中有多少字母
+
+  ```kotlin
+  // 传统方式，定义一个单例类，编写lettersCount方法
+  object StringUtil {
+      fun lettersCount(str:String):Int{
+          var count = 0
+          for (char in str){
+              if (char.isLetter()){
+                  count++
+              }
+          }
+          return count
+      }
+  }
+  fun main() {
+      val str = "ABC123xyz@#$"
+      val count = StringUtil.lettersCount(str) //调用
+      print(count)
+  }
+  ```
+
+- 定义扩展函数的语法结构
+
+  ```kotlin
+  fun ClassName.methodName(param1: Int, param2: Int): Int { 
+  	return 0 
+  }
+  ```
+
+- 使用扩展函数优化
+
+  ```kotlin
+  fun String.lettersCount(): Int{
+      var count = 0
+      for (char in this){
+          if (char.isLetter()){
+              count++
+          }
+      }
+      return count
+  }
+  
+  fun main() {
+      val count = "ABC123xyz@#$".lettersCount()
+      print(count)
+  }
+  ```
+
+## 运算符重载
+
+- Kotlin允许将两个对象相加
+
+  语法结构：
+
+  ```kotlin
+  class Obj {
+      operator fun plus(obj: Obj): Obj {
+          // 处理相加逻辑
+      }
+  }
+  ```
+
+  在上述语法结构中，关键字operator和函数名plus都是固定不变的，而接收的参数和函数返回值可以根据你的逻辑自行设定
+
+  调用方法：
+
+  ```kotlin
+  val obj1 = Obj() 
+  val obj2 = Obj() 
+  val obj3 = obj1 + obj2
+  ```
+
+  上述代码在编译的时候被转换成obj1.plus(obj2)的调用方式
+
+- 让两个Money对象相加
+
+  ```kotlin
+  class Money(val value: Int) { 
+  	operator fun plus(money: Money): Money { 
+  		val sum = value + money.value 
+  		return Money(sum) 
+  	}
+  }
+  ```
+
+  调用
+
+  ```kotlin
+  val money1 = Money(5) 
+  val money2 = Money(10) 
+  val money3 = money1 + money2 
+  println(money3.value) // 15
+  ```
+
+  将Money对象和数字相加，Kotlin允许对同一个运算符进行多重重载
+
+  ```kotlin
+  class Money(val value: Int) {
+      operator fun plus(money: Money): Money {
+          val sum = value + money.value
+          return Money(sum)
+      }
+      operator fun plus(newValue: Int): Money {
+          val sum = value + newValue
+          return Money(sum)
+      }
+  }
+  ```
+
+  调用
+
+  ```kotlin
+  val money1 = Money(5) 
+  val money2 = Money(10) 
+  val money3 = money1 + money2 // 15
+  val money4 = money3 + 20 
+  println(money4.value) // 35
+  ```
+
+- 常用的可重载运算符和关键字对应的语法糖表达式
+
+  <img src="https://image.cgz233.cn/images/202303032052909.png" alt="image-20230303205104964" style="zoom: 45%;" /> 
+
+  注意，最后一个`a in b`的语法糖表达式对应的实际调用函数是`b.contains(a)`，a、b对象的顺序是反过来的。这在语义上很好理解，因为`a in b`表示判断a是否在b当中，而`b.contains(a)`表示判断b是否包含a，因此这两种表达方式是等价的
+
+- 案例：优化随机生成字符串长度函数
+
+  ```kotlin
+  // 老写法
+  fun getRandomLengthString(str: String): String {
+      val n = (1..20).random()
+      val builder = StringBuilder()
+      repeat(n) {
+          builder.append(str)
+      }
+      return builder.toString()
+  }
+  ```
+
+  使用扩展函数和运算符重载优化：
+
+  ```kotlin
+  operator fun String.times(n: Int): String {
+      val builder = StringBuilder()
+      repeat(n) {
+          builder.append(this)
+      }
+      return builder.toString()
+  }
+  ```
+
+  解读：operator关键字肯定是必不可少的；然后既然是要重载乘号运算符，函数名必须是times；最后，由于是定义扩展函数，因此还要在方向名前面加上String.的语法结构。在times()函数中，我们借助StringBuilder 和repeat函数将字符串重复n次，最终将结果返回
+
+  调用
+
+  ```kotlin
+  val str = "abc" * 3 
+  println(str) // abcabcabc
+  ```
+
+  Kotlin 的String类中已经提供了一个用于将字符串重复n遍的repeat()函数，因此times()函数还可以进一步精简成如下形式：
+
+  ```kotlin
+  operator fun String.times(n: Int) = repeat(n) 
+  ```
+
+  掌握了上述功能之后，现在我们就可以在getRandomLengthString()函数中使用这种魔术一般的写法了，代码如下所示：
+
+  ```kotlin
+  fun getRandomLengthString(str: String) = str * (1..20).random() 
+  ```
+
 
 
 # 逻辑控制

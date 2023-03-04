@@ -2012,7 +2012,7 @@ protected void onStop() {
 
 1. 发送广播时要注明这是个有序广播调用sendOrderedBroadcast方法才能发送有序广播
 2. 定义有序广播的接收器接收器的定义代码基本不变，唯一的区别是：如果在接收器的内部代码调用abortBroadcast方法，就会中断有序广播
-3. 注册有序广播的多个接收器为了给接收器排队，还需调用意图过滤器的setPriority方法设置优先级，优先级越大的接收器，越先收到有序广播。
+3. 注册有序广播的多个接收器为了给接收器排队，还需调用意图过滤器的setPriority方法设置优先级，优先级越大的接收器，越先收到有序广播
 
 ```java
 public class BroadOrderActivity extends AppCompatActivity implements View.OnClickListener {

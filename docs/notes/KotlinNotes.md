@@ -9,6 +9,10 @@
 - [Kotlin 语言中文站](https://www.kotlincn.net/)
 - [菜鸟教程](https://www.runoob.com/kotlin/kotlin-tutorial.html)
 
+思维导图（来自第一行代码）：
+
+<img src="https://image.cgz233.cn/images/202303140824278.jpg" alt="第一行代码——Android（第3版）-思维导图 - 副本_01" style="zoom: 25%;" />
+
 
 
 # 变量
@@ -305,7 +309,7 @@
   println(fileContent)
   ```
 
-## 定义静态方法
+## 静态函数
 
 - 像工具类这种功能，Kotlin推荐使用单例类来创建
 
@@ -354,7 +358,7 @@
 
   在Java中调用顶层方法，因为Kotlin 编译器会自动创建一个叫作`文件名Kt` 的Java 类，所有调用的话就是`文件名Kt.doSomething()`
 
-## 拓展函数
+## 扩展函数
 
 - 定义一个方法，查询一个字符串中有多少字母
 
@@ -403,130 +407,6 @@
       val count = "ABC123xyz@#$".lettersCount()
       print(count)
   }
-  ```
-
-## 运算符重载
-
-- Kotlin允许将两个对象相加
-
-  语法结构：
-
-  ```kotlin
-  class Obj {
-      operator fun plus(obj: Obj): Obj {
-          // 处理相加逻辑
-      }
-  }
-  ```
-
-  在上述语法结构中，关键字operator和函数名plus都是固定不变的，而接收的参数和函数返回值可以根据你的逻辑自行设定
-
-  调用方法：
-
-  ```kotlin
-  val obj1 = Obj() 
-  val obj2 = Obj() 
-  val obj3 = obj1 + obj2
-  ```
-
-  上述代码在编译的时候被转换成obj1.plus(obj2)的调用方式
-
-- 让两个Money对象相加
-
-  ```kotlin
-  class Money(val value: Int) { 
-  	operator fun plus(money: Money): Money { 
-  		val sum = value + money.value 
-  		return Money(sum) 
-  	}
-  }
-  ```
-
-  调用
-
-  ```kotlin
-  val money1 = Money(5) 
-  val money2 = Money(10) 
-  val money3 = money1 + money2 
-  println(money3.value) // 15
-  ```
-
-  将Money对象和数字相加，Kotlin允许对同一个运算符进行多重重载
-
-  ```kotlin
-  class Money(val value: Int) {
-      operator fun plus(money: Money): Money {
-          val sum = value + money.value
-          return Money(sum)
-      }
-      operator fun plus(newValue: Int): Money {
-          val sum = value + newValue
-          return Money(sum)
-      }
-  }
-  ```
-
-  调用
-
-  ```kotlin
-  val money1 = Money(5) 
-  val money2 = Money(10) 
-  val money3 = money1 + money2 // 15
-  val money4 = money3 + 20 
-  println(money4.value) // 35
-  ```
-
-- 常用的可重载运算符和关键字对应的语法糖表达式
-
-  <img src="https://image.cgz233.cn/images/202303032052909.png" alt="image-20230303205104964" style="zoom: 45%;" /> 
-
-  注意，最后一个`a in b`的语法糖表达式对应的实际调用函数是`b.contains(a)`，a、b对象的顺序是反过来的。这在语义上很好理解，因为`a in b`表示判断a是否在b当中，而`b.contains(a)`表示判断b是否包含a，因此这两种表达方式是等价的
-
-- 案例：优化随机生成字符串长度函数
-
-  ```kotlin
-  // 老写法
-  fun getRandomLengthString(str: String): String {
-      val n = (1..20).random()
-      val builder = StringBuilder()
-      repeat(n) {
-          builder.append(str)
-      }
-      return builder.toString()
-  }
-  ```
-
-  使用扩展函数和运算符重载优化：
-
-  ```kotlin
-  operator fun String.times(n: Int): String {
-      val builder = StringBuilder()
-      repeat(n) {
-          builder.append(this)
-      }
-      return builder.toString()
-  }
-  ```
-
-  解读：operator关键字肯定是必不可少的；然后既然是要重载乘号运算符，函数名必须是times；最后，由于是定义扩展函数，因此还要在方向名前面加上String.的语法结构。在times()函数中，我们借助StringBuilder 和repeat函数将字符串重复n次，最终将结果返回
-
-  调用
-
-  ```kotlin
-  val str = "abc" * 3 
-  println(str) // abcabcabc
-  ```
-
-  Kotlin 的String类中已经提供了一个用于将字符串重复n遍的repeat()函数，因此times()函数还可以进一步精简成如下形式：
-
-  ```kotlin
-  operator fun String.times(n: Int) = repeat(n) 
-  ```
-
-  掌握了上述功能之后，现在我们就可以在getRandomLengthString()函数中使用这种魔术一般的写法了，代码如下所示：
-
-  ```kotlin
-  fun getRandomLengthString(str: String) = str * (1..20).random() 
   ```
 
 
@@ -735,9 +615,29 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
 
   Java中的`Activty.class`相当于Kotlin中的`Activity::class.java`
 
-## 继承与构造函数
+- 延迟初始化：
 
-### 继承
+  - 使用lateinit关键字
+  - `if(::对象名.isInitialized)`判断是否进行了初始化
+
+- 惰性初始化：
+
+  - 使用时才会创建对象
+
+  - 使用by lazy
+
+    ```kotlin
+    class Test(_name: String) {
+        var name = _name
+        val config by lazy {loadCofig()}
+        private fun loadCofig() : String {
+            println("loading")
+            return "xxx"
+        }
+    }
+    ```
+
+## 继承
 
 - 在Kotlin中想要继承一个类，首先要让这个类可以继承，在Kotlin中，任何一个非抽象类默认都是不可以被继承的，相当于在java中声明了final关键字，所以说要想继承这个类，就要在这个类前面加上open关键字
 
@@ -754,7 +654,7 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
   }
   ```
 
-### 构造函数
+## 构造函数
 
 - Kotlin将构造函数分为了两种：主构造函数和次构造函数
 
@@ -824,9 +724,7 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
   
   因为student类的后面没有显式的定义组构造函数，同时又定义了次构造函数，所以现在student类是没有主构造函数的，那么既然没有主构造函数，所以继承person的时候也不需要再加上括号了。另外，由于没有主构造函数，次构造函数只能直接调用父类的构造函数，上述代码也是将this关键字换成了super关键字。
 
-## 接口和修饰符
-
-### 接口
+## 接口
 
 - 接口定义
 
@@ -867,7 +765,7 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
   }
   ```
 
-### 修饰符
+## 修饰符
 
 | 修饰符    | Java                               | Kotlin             |
 | --------- | ---------------------------------- | ------------------ |
@@ -877,9 +775,7 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
 | default   | 同一包路径下的类可见（默认）       | 无                 |
 | internal  | 无                                 | 同一模块中的类可见 |
 
-## 数据类与单例类
-
-### 数据类
+## 数据类
 
 - 数据类通常要重写equals()、hashCode()、toString()方法
 
@@ -928,7 +824,7 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
   data class Cellphone(val brand: String, val price: Double)
   ```
 
-### 单例类
+## 单例类
 
 - java中实现
 
@@ -1200,7 +1096,6 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
   }
   ```
 
-  
 
 ## Java函数式API
 
@@ -1257,6 +1152,111 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
   button.setOnClickListener {
   }
   ```
+
+## 高阶函数
+
+### 基本概念
+
+- 定义函数类型：`(String, Int) -> Unit` Unit表示没有返回值，等同java中void
+
+- 定义高阶函数：
+
+  ```kotlin
+  fun example(func: (String, Int) -> Unit) {
+      func("hello", 123)
+  }
+  ```
+
+- 举例：
+
+  ```kotlin
+  fun main() {
+      val num1AndNum2 = num1AndNum2(1, 2, ::jia)
+      print(num1AndNum2) // 3
+      val n = num1AndNum2(1, 2) { n1, n2 ->
+          n1 + n2
+      }
+      print(n)
+  }
+  
+  fun num1AndNum2(num1: Int, num2: Int, operator: (Int, Int) -> Int): Int {
+      return operator(num1, num2)
+  }
+  
+  fun jia(num1: Int, num2: Int): Int {
+      return num1 + num2
+  }
+  ```
+
+- 使用高阶函数模仿apply标准函数
+
+  ```kotlin
+  fun StringBuilder.build(block: StringBuilder.() -> Unit): StringBuilder {
+      block()
+      return this
+  }
+  
+  fun main() {
+      val list = listOf("Apple", "Banana", "Orange", "Pear", "Grape")
+      val result = StringBuilder().build {
+          append("Start eating fruits.\n")
+          for (fruit in list) {
+              append(fruit).append("\n")
+          }
+          append("Ate all fruits.")
+      }
+      println(result.toString())
+  }
+  ```
+
+- 使用高阶函数简化SharedPreferences的用法
+
+  ```kotlin
+  fun SharedPreferences.open(block: SharedPreferences.Editor.() -> Unit) {
+      val editor = edit()
+      editor.block()
+      editor.apply()
+  }
+  // 使用
+  getSharedPreferences("data",Context.MODE_PRIVATE).open {
+      putString("name", "Tom")
+      putInt("age", 18)
+      putBoolean("married", false)
+  }
+  ```
+
+  Google提供的KTX扩展库中已经包含了上述SharedPreferences的简化用法，这个扩展库会在AndroidStudio创建项目的时候自动引入build.gradle的dependencies中
+
+  ```groovy
+  dependencies {
+  	...
+      implementation 'androidx.core:core-ktx:1.2.0'
+      ...
+  }
+  ```
+
+  直接使用
+
+  ```kotlin
+  getSharedPreferences("data",Context.MODE_PRIVATE).edit {
+      putString("name", "Tom")
+      putInt("age", 18)
+      putBoolean("married", false)S
+  }
+  ```
+
+### 内联函数
+
+- 内联函数的用法非常简单，只需要在定义高阶函数时加上inline关键字的声明即可，如下所示：
+
+  ```kotlin
+  inline fun num1AndNum2(num1: Int, num2: Int, operation: (Int, Int) -> Int): Int {
+      val result = operation(num1, num2)
+      return result
+  }
+  ```
+
+- Kotlin编译器会将内联函数中的代码在编译的时候自动替换到调用它的地方，以减少性能的开销
 
 
 
@@ -1372,7 +1372,276 @@ fun largerNum(num1: Int, num2: Int) = if (num1 > num2) num1 else num2
 
 
 
-# 字符串操作和数字类型
+# 泛型
+
+## 泛型的基本用法
+
+- 定义泛型类：
+
+  ```kotlin
+  class MyClass<T> {
+      fun method(param: T) {
+          return param
+      }
+  }
+  ```
+
+  ```kotlin
+  // 调用
+  val myClass = MyClass<T>()
+  val result = myClass.method(123)
+  ```
+
+- 定义泛型方法：
+
+  ```kotlin
+  class MyClass {
+      fun <T> method(param: T): T {
+          return param
+      }
+  }
+  ```
+
+  ```kotlin
+  // 调用
+  val myClass = MyClass()
+  val result = myClass.method<Int>(123)
+  ```
+
+  根据Kotlin的类型推导机制，例如我们传入了一个Int类型的参数，它能够自动推导出泛型的类型就是Int型，因此这里也可以直接省略泛型的指定：
+
+  ```kotlin
+  val myClass = MyClass() 
+  val result = myClass.method(123)
+  ```
+
+- Kotlin允许对泛型的类型进行限制
+
+  ```kotlin
+  class MyClass {
+      fun <T : Number> method(param: T): T {
+          return param
+      }
+  }
+  ```
+
+  这种写法就表明，只能将method()方法的泛型指定成数字类型，比如Int、Float、Double等。但是如果你指定成字符串类型，就肯定会报错，因为它不是一个数字
+
+- 举例：模仿实现和apply标准函数 
+
+  ```kotlin
+  fun <T> T.build(block: T.() -> Unit): T { 
+  	block() 
+  	return this 
+  }
+  ```
+
+
+
+# 委托
+
+## 类委托
+
+- 编写一个类实现Set接口
+
+  ```kotlin
+  class MySet<T>(val helperSet: HashSet<T>) : Set<T> {
+      override val size: Int
+          get() = helperSet.size
+  
+      override fun contains(element: T): Boolean = helperSet.contains(element)
+  
+      override fun containsAll(elements: Collection<T>): Boolean = helperSet.containsAll(elements)
+  
+      override fun isEmpty(): Boolean = helperSet.isEmpty()
+  
+      override fun iterator(): Iterator<T> = helperSet.iterator()
+  
+  }
+  ```
+
+  MySet的构造函数中接收了一个HashSet参数，这就相当于一个辅助对象。然后在Set接口所有的方法实现中，我们都没有进行自己的实现，而是调用了辅助对象中相应的方法实现，这就是一种委托模式
+
+- Kotlin中委托使用的关键字是by，只需要在接口声明的后面使用by关键字，再接上受委托的辅助对象，就可以免去之前所写的一大堆模板式的代码
+
+  ```kotlin
+  class MySet<T>(val helperSet: HashSet<T>) : Set<T> by helperSet {
+      
+      fun HelloWorld() = println("Hello World")
+      
+      override fun isEmpty(): Boolean = false
+  }
+  ```
+
+## 委托属性
+
+- 语法结构：
+
+  ```kotlin
+  class MyClass {
+      var p by Delegate()
+  }
+  ```
+
+  这里使用by关键字连接了左边的p属性和右边的Delegate实例，这种写法就代表着将p属性的具体实现委托给了Delegate类去完成。当调用p属性的时候会自动调用Delegate类的getValue()方法，当给p属性赋值的时候会自动调用Delegate类的setValue()方法
+
+- 因此，还得对Delegate类进行具体的实现才行
+
+  这是一种标准的代码实现模板，在Delegate类中我们必须实现getValue()和setValue()这两个方法，并且都要使用operator关键字进行声明
+
+  ```kotlin
+  class Delegate {
+  
+      var propValue: Any? = null
+  
+      // getValue()方法要接收两个参数：
+      // 第一个参数用于声明该Delegate类的委托功能可以在什么类中使用，这里写成MyClass表示仅可在MyClass类中使用
+      // 第二个参数KProperty<*>是Kotlin 中的一个属性操作类，可用于获取各种属性相关的值，在当前场景下用不着，但是必须在方法参数上进行声明
+      operator fun getValue(myClass: Myclass, property: KProperty<*>): Any? {
+          return propValue
+      }
+  
+      // setValue()前两个参数和getValue()方法是相同的
+      // 最后一个参数表示具体要赋值给委托属性的值，这个参数的类型必须和getValue()方法返回值的类型保持一致
+      operator fun setValue(myClass: Myclass, property: KProperty<*>, value: Any?) {
+          propValue = value
+      }
+  }
+  ```
+
+
+
+# 协程
+
+
+
+# 其他
+
+## 运算符重载
+
+- Kotlin允许将两个对象相加
+
+  语法结构：
+
+  ```kotlin
+  class Obj {
+      operator fun plus(obj: Obj): Obj {
+          // 处理相加逻辑
+      }
+  }
+  ```
+
+  在上述语法结构中，关键字operator和函数名plus都是固定不变的，而接收的参数和函数返回值可以根据你的逻辑自行设定
+
+  调用方法：
+
+  ```kotlin
+  val obj1 = Obj() 
+  val obj2 = Obj() 
+  val obj3 = obj1 + obj2
+  ```
+
+  上述代码在编译的时候被转换成obj1.plus(obj2)的调用方式
+
+- 让两个Money对象相加
+
+  ```kotlin
+  class Money(val value: Int) { 
+  	operator fun plus(money: Money): Money { 
+  		val sum = value + money.value 
+  		return Money(sum) 
+  	}
+  }
+  ```
+
+  调用
+
+  ```kotlin
+  val money1 = Money(5) 
+  val money2 = Money(10) 
+  val money3 = money1 + money2 
+  println(money3.value) // 15
+  ```
+
+  将Money对象和数字相加，Kotlin允许对同一个运算符进行多重重载
+
+  ```kotlin
+  class Money(val value: Int) {
+      operator fun plus(money: Money): Money {
+          val sum = value + money.value
+          return Money(sum)
+      }
+      operator fun plus(newValue: Int): Money {
+          val sum = value + newValue
+          return Money(sum)
+      }
+  }
+  ```
+
+  调用
+
+  ```kotlin
+  val money1 = Money(5) 
+  val money2 = Money(10) 
+  val money3 = money1 + money2 // 15
+  val money4 = money3 + 20 
+  println(money4.value) // 35
+  ```
+
+- 常用的可重载运算符和关键字对应的语法糖表达式
+
+  <img src="https://image.cgz233.cn/images/202303032052909.png" alt="image-20230303205104964" style="zoom: 45%;" /> 
+
+  注意，最后一个`a in b`的语法糖表达式对应的实际调用函数是`b.contains(a)`，a、b对象的顺序是反过来的。这在语义上很好理解，因为`a in b`表示判断a是否在b当中，而`b.contains(a)`表示判断b是否包含a，因此这两种表达方式是等价的
+
+- 案例：优化随机生成字符串长度函数
+
+  ```kotlin
+  // 老写法
+  fun getRandomLengthString(str: String): String {
+      val n = (1..20).random()
+      val builder = StringBuilder()
+      repeat(n) {
+          builder.append(str)
+      }
+      return builder.toString()
+  }
+  ```
+
+  使用扩展函数和运算符重载优化：
+
+  ```kotlin
+  operator fun String.times(n: Int): String {
+      val builder = StringBuilder()
+      repeat(n) {
+          builder.append(this)
+      }
+      return builder.toString()
+  }
+  ```
+
+  解读：operator关键字肯定是必不可少的；然后既然是要重载乘号运算符，函数名必须是times；最后，由于是定义扩展函数，因此还要在方向名前面加上String.的语法结构。在times()函数中，我们借助StringBuilder 和repeat函数将字符串重复n次，最终将结果返回
+
+  调用
+
+  ```kotlin
+  val str = "abc" * 3 
+  println(str) // abcabcabc
+  ```
+
+  Kotlin 的String类中已经提供了一个用于将字符串重复n遍的repeat()函数，因此times()函数还可以进一步精简成如下形式：
+
+  ```kotlin
+  operator fun String.times(n: Int) = repeat(n) 
+  ```
+
+  掌握了上述功能之后，现在我们就可以在getRandomLengthString()函数中使用这种魔术一般的写法了，代码如下所示：
+
+  ```kotlin
+  fun getRandomLengthString(str: String) = str * (1..20).random() 
+  ```
+
+
 
 ## 字符串操作
 

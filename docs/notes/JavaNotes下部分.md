@@ -300,9 +300,9 @@ JFrame 是 Java 程序设计语言中用于建立窗口的类。它可以用来�
 
 ## jMenuBar JMenu JMenuItem
 
-jMenuBar、JMenu 和 JMenuItem 是 Java Swing GUI 工具包中的类。jMenuBar 用于创建菜单栏，JMenu 用于创建菜单，而 JMenuItem 用于创建菜单项。通常，jMenuBar 包含多个 JMenu 对象，每个 JMenu 又包含多个 JMenuItem 对象，用户可以通过这些 JMenu 和 JMenuItem 来操作应用程序。
+jMenuBar、JMenu 和 JMenuItem 是 Java Swing GUI 工具包中的类。jMenuBar 用于创建菜单栏，JMenu 用于创建菜单，而 JMenuItem 用于创建菜单项。通常，jMenuBar 包含多个 JMenu 对象，每个 JMenu 又包含多个 JMenuItem 对象，用户可以通过这些 JMenu 和 JMenuItem 来操作应用程序
 
-<img src="https://pb.nichi.co/aisle-food-ketchup" style="zoom: 50%;" /> 
+<img src="https://image.cgz233.cn/images/202303131959810.png" alt="image-20230313195930524" style="zoom:50%;" /> 
 
 **代码举例：**
 
@@ -558,7 +558,7 @@ jDialog.setVisible(true);
    }
    ```
 
-   <img src="https://pb.nichi.co/caution-giraffe-setup" style="zoom:70%;" /> 
+   <img src="https://image.cgz233.cn/images/202303131959711.png" alt="image-20230313195944104" style="zoom: 80%;" /> 
 
 2. 实现Runnable接口，重写 run方法
 
@@ -761,7 +761,7 @@ class T extends Thread {
 
 **线程状态转换图：**
 
-<img src="https://pb.nichi.co/trial-shuffle-isolate" style="zoom: 30%;" /> 
+<img src="https://image.cgz233.cn/images/202303132000201.png" alt="image-20230313200002828" style="zoom: 33%;" />  
 
 
 
@@ -953,9 +953,9 @@ class DeadLockDemo extends Thread {
 
 ### 体系图
 
-<img src="https://pb.nichi.co/enhance-hurry-future" style="zoom:50%;" /> 
+<img src="https://image.cgz233.cn/images/202303132000397.png" alt="image-20230313200036033" style="zoom:50%;" /> 
 
-<img src="https://pb.nichi.co/million-perfect-fiscal" style="zoom: 40%;" /> 
+<img src="https://image.cgz233.cn/images/202303132000042.png" alt="image-20230313200045655" style="zoom: 50%;" /> 
 
 ### FileInputStream 和 FileOutputSteram
 
@@ -1047,7 +1047,7 @@ public class FileCopy {
 - 处理流（也叫包装流）是“连接“在已存在的流（节点流或处理流）之上，为程序提供更为强大的读写功能，也更加灵活，如BufferedReader、BufferedWriter
 - 关闭处理流时，只需要关闭外层流即可（关闭处理流时系统自动关闭节点流）
 
-<img src="https://pb.nichi.co/relax-traffic-puppy" style="zoom: 33%;" /> 
+<img src="https://image.cgz233.cn/images/202303132001471.png" alt="image-20230313200104926" style="zoom: 33%;" /> 
 
 **节点流和处理流的区别和联系：**
 
@@ -1422,7 +1422,7 @@ public class Properties02 {
    | D    | 224.0.0.0 - 239.255.255.255 |
    | E    | 240.0.0.0 - 247.255.255.255 |
 
-   <img src="https://pb.nichi.co/blossom-solve-radio" style="zoom:50%;" /> 
+    <img src="https://image.cgz233.cn/images/202303131939772.png" alt="image-20230313193914098" style="zoom:50%;" />
 
 ### 域名
 
@@ -1443,7 +1443,7 @@ public class Properties02 {
 
 TCP/IP (Transmission Control Protocol/Internet Protocol) 的简写中文译名为传输控制协议/因特网互联协议，又叫网络通讯协议，这个协议是Internet最基本的协议、Internet国际互联网络的基础，简单地说，就是由网络层的IP协议和传输层的TCP协议组成的
 
-<img src="https://pb.nichi.co/property-drive-unusual" style="zoom:50%;" /> 
+ <img src="https://image.cgz233.cn/images/202303131959157.png" alt="image-20230313195901718" style="zoom:50%;" />
 
 ### 网络通信协议
 
@@ -1810,7 +1810,7 @@ public class UDPSenderB {
 
 ## Class类
 
-<img src="https://pb.nichi.co/glimpse-service-pear" style="zoom:50%;" /> 
+<img src="https://image.cgz233.cn/images/202303132001947.png" alt="image-20230313200130071" style="zoom:50%;" /> 
 
 1. Class也是类，因此也继承Object类
 2. Class类对象不是new出来的，而是系统创建的
@@ -1822,7 +1822,7 @@ public class UDPSenderB {
 
 **常用方法：**
 
-<img src="https://pb.nichi.co/tornado-craft-figure" style="zoom:50%;" /> 
+<img src="https://image.cgz233.cn/images/202303132001375.png" alt="image-20230313200137282" style="zoom:50%;" /> 
 
 **获取Class对象：**
 

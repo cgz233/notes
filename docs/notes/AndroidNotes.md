@@ -1430,25 +1430,25 @@ graph LR
 
    该模式可以被设定，不在 manifest 设定时候，Activity 的默认模式就是 standard。在该模式下，启动的 Activity 会依照启动顺序被依次压入 Task 栈中
 
-   <img src="https://pb.nichi.co/consider-proof-divide" style="zoom: 67%;" /> 
+   <img src="https://image.cgz233.cn/images/202303132003917.png" alt="image-20230313200218360" style="zoom: 67%;" />  
 
 2. **栈顶复用模式 singleTop**
 
    在该模式下，如果栈顶 Activity 为我们要新建的 Activity（目标Activity），那么就不会重复创建新的Activity
 
-   <img src="https://pb.nichi.co/real-dream-drink" style="zoom:67%;" /> 
+   <img src="https://image.cgz233.cn/images/202303132003361.png" alt="image-20230313200356986" style="zoom:67%;" /> 
 
 3. **栈内复用模式 singleTask**
 
    与 singleTop 模式相似，只不过 singleTop 模式是只是针对栈顶的元素，而 singleTask 模式下，如果task 栈内存在目标 Activity 实例，则将 task 内的对应 Activity 实例之上的所有 Activity 弹出栈，并将对应 Activity 置于栈顶，获得焦点
 
-   <img src="https://pb.nichi.co/embrace-tiny-toast" style="zoom:67%;" /> 
+   <img src="https://image.cgz233.cn/images/202303132004346.png" alt="image-20230313200407684" style="zoom:67%;" /> 
 
 4. **全局唯一模式 singleInstance**
 
    在该模式下，我们会为目标 Activity 创建一个新的 Task 栈，将目标 Activity 放入新的 Task，并让目标Activity获得焦点。新的 Task 有且只有这一个 Activity 实例。 如果已经创建过目标 Activity 实例，则不会创建新的 Task，而是将以前创建过的 Activity 唤醒
 
-   <img src="https://pb.nichi.co/roast-desk-already" style="zoom:67%;" /> 
+   <img src="https://image.cgz233.cn/images/202303132004230.png" alt="image-20230313200415739" style="zoom:67%;" /> 
 
 **在代码里面设置启动标志** 
 
@@ -2268,7 +2268,7 @@ public class SystemMinuteActivity extends AppCompatActivity {
 
 - getSubtype：获取网络子类型。当网络类型为数据连接时，子类型为2G/3G/4G的细分类型，如CDMA、EVDO、HSDPA、LTE等
 
-  <img src="https://pb.nichi.co/arena-soup-attitude" style="zoom: 50%;" /> 
+  <img src="https://image.cgz233.cn/images/202303132006112.png" alt="image-20230313200448130" style="zoom: 67%;" /> 
 
 - getSubtypeName：获取网络子类型的名称
 
@@ -3081,7 +3081,7 @@ private ServiceConnection mServiceConn = new ServiceConnection() {
 
 - 复合按钮的继承关系：
 
-  <img src="https://pb.nichi.co/onion-flash-shuffle" style="zoom:67%;" /> 
+  <img src="https://image.cgz233.cn/images/202303132006150.png" alt="image-20230313200623901" style="zoom:67%;" /> 
 
 - CompoundButton在XML文件中主要使用下面两个属性
   - checked：指定按钮的勾选状态，true表示勾选，false则表示未勾选。默认为未勾选
@@ -4895,17 +4895,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 - raw_contacts表
 
-  <img src="https://pb.nichi.co/gallery-agree-develop"  /> 
+  ![image-20230313200651557](https://image.cgz233.cn/images/202303132006787.png) 
 
 - data表
 
   记录了用户的通讯录所有数据，包括手机号，显示名称等，但是里面的mimetype_id表示不同的数据类型，这与表mimetypes表中的*id*相对应，raw_contact_id 与下面的 raw_contacts表中的 id 相对应
 
-  ![](https://pb.nichi.co/typical-present-trap) 
+  ![image-20230313200656084](https://image.cgz233.cn/images/202303132006252.png) 
 
 - mimetypes表
 
-  ![](https://pb.nichi.co/journey-track-novel) 
+  ![image-20230313200700578](https://image.cgz233.cn/images/202303132007706.png) 
 
 **添加步骤：**
 

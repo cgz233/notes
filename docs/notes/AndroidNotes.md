@@ -7019,3 +7019,1635 @@ class RightFragment : Fragment() {
 }
 ```
 
+
+
+# 多媒体
+
+## 图片加载
+
+### 使用Glide加载网络图片
+
+- [Glide v4中文文档](https://muyangmin.github.io/glide-docs-cn/)
+- Glide可以直接将加载网络图片到ImageView
+
+1. 导入依赖
+
+   ```groovy
+   implementation ("com.github.bumptech.glide:glide:4.11.0")
+   ```
+
+2. 用法
+
+   ```kotlin
+   Glide.with(活动实例).load(网址字符串http/https).into(图像视图ImageView)
+   ```
+
+3. Gilde默认采用FIT_CENTER，相当于在load和into方法调用fitCenter方法
+
+   ```kotlin
+   Glide.with(this).load(url).fitCenter().into(imageView)
+   ```
+
+4. 除了fitCenter方法，还提供了centerCrop方法、centerInside方法，还支持圆形裁剪，只需要调用circleCrop方法
+
+```xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/showImageBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show Image"/>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
+```
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    private val url = "https://image.cgz233.cn/test.jpg"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        showImageBtn.setOnClickListener {
+            Glide.with(this).load(url).fitCenter().into(imageView)
+        }
+    }
+}
+```
+
+### 利用Glide实现图片三级缓存
+
+- Gilde默认开启三级缓存机制
+
+- 定制Glide
+
+  ```kotlin
+  val builder = Glide.with(this).load(url) // 构建一个加载网络图片的建造器 
+  val options = RequestOptions().apply { // 创建Glide的请求选项
+      // 个性化定制Gilde
+  }
+  // 在图像视图上展示网络图片，apply方法表示启用指定的请求选项
+  builder.apply(options).into(imageView)
+  ```
+
+- RequestOptions的方法：
+
+  - placeholder：设置加载开始的占位图
+
+  - error：设置发送错误的提示图
+
+  - override：设置图片的尺寸
+
+  - diskCacheStrategy：设置指定的缓存策略
+
+    | DiskCacheStrategy类的缓存策略 | 说明                       |
+    | ----------------------------- | -------------------------- |
+    | AUTOMATIC                     | 自动选择缓存策略           |
+    | NONE                          | 不缓存图片                 |
+    | DATA                          | 只缓存压缩后的图片         |
+    | ALL                           | 同时缓存原始图片和压缩图片 |
+
+  - skipMemoryCache：设置是否跳过内存缓存
+
+  - disallHardwareConfig：关闭硬件加速，防止过大尺寸的图片加载报错
+
+  - fitCenter：保持图片的宽高比例居中显示
+
+  - centerCrop：保持图片的宽高比例，充满整个视图
+
+  - centerInside：保持图片的宽高比例，在图像内部居中显示
+
+  - circleCrop：展示圆形裁剪后的图片
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    private val url = "https://image.cgz233.cn/test.jpg"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        showImageBtn.setOnClickListener {
+            val builder = Glide.with(this).load(url) // 构建一个加载网络图片的建造器
+            val options = RequestOptions().apply { // 创建Glide的请求选项
+                placeholder(R.drawable.abc) // 设置加载开始的占位图
+                error(R.drawable.abc) // 设置发送错误的提示图
+                diskCacheStrategy(DiskCacheStrategy.DATA) // 设置指定的缓存策略
+            }
+            // 在图像视图上展示网络图片，apply方法表示启用指定的请求选项
+            builder.apply(options).into(imageView)
+        }
+    }
+}
+```
+
+### 使用Glide加载特殊图像
+
+- 加载GIF图像（和普通图片用法相同）
+
+  ```kotlin
+  Glide.with(this).load(gif).into(imageView)
+  ```
+
+- 加载视频指定帧，使用RequestOptions.frameOf()方法
+
+  ```kotlin
+  val options = RequestOptions.frameOf(5 * 1000 * 1000.toLong())
+  Glide.with(this).load("https://image.cgz233.cn/cat.mp4").apply(options).into(imageView)
+  ```
+
+  ```kotlin
+  class MainActivity : AppCompatActivity() {
+  
+      override fun onCreate(savedInstanceState: Bundle?) {
+          super.onCreate(savedInstanceState)
+          setContentView(R.layout.activity_main)
+          ......
+          showVideoBtn.setOnClickListener {
+              val options = getOptions(0)
+              Glide.with(this).load("https://image.cgz233.cn/cat.mp4").apply(options).into(imageView)
+          }
+      }
+  
+      // 获取指定时间点的请求参数
+      @SuppressLint("CheckResult")
+      private fun getOptions(position: Int): RequestOptions {
+          // 指定某个时间位置的帧，单位微妙
+          val options = RequestOptions.frameOf(position * 1000 * 1000.toLong())
+          // 获取最近的视频帧
+          options.set(VideoDecoder.FRAME_OPTION, MediaMetadataRetriever.OPTION_CLOSEST)
+          // 执行从视频帧到位图对象的转换操作
+          options.transform(object : BitmapTransformation() {
+              override fun updateDiskCacheKey(p0: MessageDigest) {
+                  try {
+                      p0.update(packageName.toByte())
+                  } catch (e: Exception) {
+                      e.printStackTrace()
+                  }
+              }
+              override fun transform(p0: BitmapPool, p1: Bitmap, p2: Int, p3: Int): Bitmap {
+                  return p1
+              }
+          })
+          return options
+      }
+  }
+  ```
+
+## 播放多媒体文件
+
+### 播放音频
+
+- 播放音频使用MediaPlayer类
+
+- 常用控制方法：
+
+  | 方法名          | 功能描述                                             |
+  | --------------- | ---------------------------------------------------- |
+  | setDataSource() | 设置要播放的音频文件的位置                           |
+  | prepare()       | 在开始播放之前调用，以完成准备工作                   |
+  | start()         | 开始或继续播放音频                                   |
+  | pause()         | 暂停播放音频                                         |
+  | reset()         | 将MediaPlayer 对象重置到刚刚创建的状态               |
+  | seekTo()        | 从指定的位置开始播放音频                             |
+  | stop()          | 停止播放音频。调用后的MediaPlayer 对象无法再播放音频 |
+  | release()       | 释放与MediaPlayer 对象相关的资源                     |
+  | isPlaying()     | 判断当前MediaPlayer 是否正在播放音频                 |
+  | getDuration()   | 获取载入的音频文件的时长                             |
+
+**使用步骤：**
+
+1. 创建一个MediaPlayer实例化对象
+2. 使用setDataSource方法设置音频的路径
+3. 调用prepare方法使MediaPlayer进入准备状态
+4. 调用start方法播放音频
+5. 调用pause暂停，调用stop停止
+
+```kotlin
+class MainActivity2 : AppCompatActivity() {
+
+    private val mediaPlayer = MediaPlayer()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main2)
+
+        //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        mediaPlayer.setDataSource("https://image.cgz233.cn/test.mp3")
+
+        musicPlayBtn.setOnClickListener {
+            if (!mediaPlayer.isPlaying){
+                mediaPlayer.prepare()
+                mediaPlayer.start()
+            }
+        }
+        musicPauseBtn.setOnClickListener {
+            if (mediaPlayer.isPlaying){
+                mediaPlayer.pause()
+            }
+        }
+
+        musicStopBtn.setOnClickListener {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.stop()
+        mediaPlayer.release()
+    }
+}
+```
+
+### 播放视频
+
+- 使用VideoView类
+
+- 常用方法：
+
+  | 方法名         | 功能描述                   |
+  | -------------- | -------------------------- |
+  | setVideoPath() | 设置要播放的视频文件的位置 |
+  | start()        | 开始或继续播放视频         |
+  | pause()        | 暂停播放视频               |
+  | resume()       | 将视频从头开始播放         |
+  | seekTo()       | 从指定的位置开始播放视频   |
+  | isPlaying()    | 判断当前是否正在播放视频   |
+  | getDuration()  | 获取载入的视频文件的时长   |
+  | suspend()      | 释放ViedoView所占用的资源  |
+
+**使用步骤：**
+
+1. 在布局中添加一个VideoView组件
+
+   ```xml
+   <VideoView
+       android:id="@+id/videoView"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"/>
+   ```
+
+2. 调用VideoView的setVideoURI设置播放地址
+
+3. 调用start方法，开始播放，调用pause暂停播放，调用resume重新播放，调用suspend释放资源
+
+4. ```
+   <VideoView
+       android:id="@+id/videoView"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"/>
+   ```
+
+```kotlin
+class MainActivity2 : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main2)
+
+        val uri = Uri.parse("https://image.cgz233.cn/cat.mp4")
+        videoView.setVideoURI(uri) // 设置视频播放的Uri地址
+
+        videoPlayBtn.setOnClickListener {
+            videoView.start() // 开始播放
+        }
+        videoPauseBtn.setOnClickListener {
+            videoView.pause() // 暂停播放
+
+        }
+        videoReplayBtn.setOnClickListener {
+            videoView.resume() // 重新播放
+
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        videoView.suspend()
+    }
+}
+```
+
+
+
+# 多线程
+
+## 线程的基本用法
+
+- 使用Thread类：
+
+  ```kotlin
+  class MyThread : Thread() {
+      override fun run() {
+          // 编写具体逻辑
+      }
+  }
+  
+  // 启动线程
+  MyThread().start()
+  ```
+
+- 使用Runnable接口：
+
+  ```kotlin
+  class MyThread : Runnable {
+      override fun run() {
+      	// 编写具体逻辑
+      }
+  }
+  
+  // 启动线程
+  val myThread = MyThread()
+  Thread(myThread).start()
+  ```
+
+- 使用Lambda方式：
+
+  ```kotlin
+  Thread {
+  	// 编写具体逻辑
+  }.start()
+  ```
+
+- Kotlin给我们提供了一种更加简单的开启线程的方式：
+
+  ```kotlin
+  thread {
+      // 编写具体逻辑
+  }
+  ```
+
+  这里的thread是一个Kotlin内置的顶层函数，只需要在Lambda表达式中编写具体的逻辑就可以了，连start()方法都不用调用，thread函数在内部帮我们全部都处理好了
+
+## Handler
+
+**基本使用：**
+
+1. 创建一个Handler对象，传入Looper.getMainLooper()，目的防止内存溢出，重写handleMessage方法
+2. 创建一个子线程，在子线程中创建一个Message对象，给这个Message对象的what属性赋值，标识这个Message对象，给这个Message对象的obj属性赋值，obj是传递的信息，然后调用Handler对象的sendMessage方法，将Message对象传入
+3. 从Handler重写的handleMessage方法中，判断mes.what是那个Message传入的，然后取出obj做代码逻辑处理
+
+```kotlin
+class HandlerActivity : AppCompatActivity() {
+
+    // 创建一个Handler对象，需传入一个Looper.getMainLooper()，目的防止内存泄漏
+    private val handler = object : Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                1 -> { // 如果是标识为1的消息
+                    val stringForNet = msg.obj as String // 取出发出的文本
+                    textTv.text = stringForNet // 显示出来
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_handler)
+
+        sendBtn.setOnClickListener {
+            thread { // 开启一个子线程
+                val stringForNet = getStringForNet() // 模拟从网络下载文本
+                val message = Message() // 创建一个Message对象
+                message.what = 1 // 标记Message
+                message.obj = stringForNet // 设置Message传递的信息
+                handler.sendMessage(message) // 发送Message
+            }
+            Toast.makeText(this, "模拟从网络获取消息中", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getStringForNet(): String {
+        val stringBuilder = StringBuilder()
+        for (i in 0..100) {
+            stringBuilder.append("Android$i")
+        }
+        Thread.sleep(6000)
+        return stringBuilder.toString()
+    }
+}
+```
+
+**在子线程中更新UI：**
+
+- 创建一个Handler对象，并重写父类的handleMessage()方法，在这里对具体的Message进行处理。如果发现Message的what字段的值等于updateText，就将TextView显示的内容改成“Nice to meet you”
+- 在线程中创建一个Message（android.os.Message）对象，并将它的what字段的值指定为updateText，然后调用Handler的sendMessage()方法将这条Message发送出去
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    val updateText = 1 // 定义整形变量，用于表示更新TextView这个动作
+
+    private val handler = object : Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            // 在这里可以进行UI操作
+            when (msg.what) {
+                updateText -> textView.text = "Nice to meet you"
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        changeTextBtn.setOnClickListener {
+            thread {
+                val msg = Message()
+                msg.what = updateText
+                handler.sendMessage(msg)
+            }
+        }
+    }
+}
+```
+
+**异步消息处理机制：**
+
+首先需要在主线程当中创建一个Handler对象，并重写handleMessage()方法。然后当子线程中需要进行UI操作时，就创建一个Message对象，并通过Handler将这条消息发送出去。之后这条消息会被添加到MessageQueue的队列中等待被处理，而Looper则会一直尝试从MessageQueue中取出待处理消息，最后分发回Handler的handleMessage()方法中。由于Handler的构造函数中我们传入了Looper.getMainLooper()，所以此时handleMessage()方法中的代码也会在主线程中运行，于是我们在这里就可以安心地进行UI操作了
+
+<img src="https://image.cgz233.cn/images/202303131550577.png" alt="image-20230313155029806" style="zoom: 25%;" />
+
+
+
+# 网络通信
+
+## WebView
+
+1. 在布局中添加WebView
+
+   ```xml
+   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+   
+       <WebView
+           android:id="@+id/webView"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"/>
+   
+   </LinearLayout>
+   ```
+
+2. 通过getSettings()方法设置一些浏览器的属性，这里只调用setJavaScriptEnabled()方法，让WebView支持JavaScript脚本
+
+   调用WebView的setWebViewClient()方法，并传入一个WebViewClient的实例。这段代码的作用是，当需要从一个网页跳转到另一个网页时，目标网页仍然在当前WebView 中显示，而不是打开系统浏览器
+
+   最后调用WebView的loadUrl()方法，并将网址传入，即可展示网页内容
+
+   ```kotlin
+   class MainActivity : AppCompatActivity() {
+       override fun onCreate(savedInstanceState: Bundle?) {
+           super.onCreate(savedInstanceState)
+           setContentView(R.layout.activity_main)
+           webView.settings.javaScriptEnabled = true
+           webView.webViewClient = WebViewClient()
+           webView.loadUrl("https://www.baidu.com")
+       }
+   }
+   ```
+
+3. 另外还需在Manifest中注册网络访问权限
+
+   ```xml
+   <uses-permission android:name="android.permission.INTERNET" />
+   ```
+
+## 使用HTTP访问网络
+
+### 使用HttpURLConnection
+
+- Android上发送HTTP请求一般有两种方式：HttpURLConnection和HttpClient。由于HttpClient存在API数量过多、扩展困难等缺点，已经在Android6.0废弃
+
+- 使用HttpURLConnection：
+
+  1. 获取HttpURLConnection的实例：创建一个URL对象，传入网络地址，最后调用一下openConnection()方法即可
+
+     ```kotlin
+     val url = URL("https://www.baidu.com") 
+     val connection = url.openConnection() as HttpURLConnection
+     ```
+
+  2. 得到了HttpURLConnection的实例之后，可以设置HTTP请求所使用的方法。常用的方法主要有两个：GET和POST。GET表示希望从服务器那里获取数据，而POST则表示希望提交数据给服务器
+
+     ```kotlin
+     connection.requestMethod = "GET"
+     ```
+
+  3. 设置连接超时、读取超时的毫秒数，以及服务器希望得到的一些消息头等
+
+     ```kotlin
+     connection.connectTimeout = 8000 
+     connection.readTimeout = 8000
+     ```
+
+  4. 调用getInputStream()方法就可以获取到服务器返回的输入流了，剩下的任务就是对输入流进行读取
+
+     ```kotlin
+     val input = connection.inputStream
+     ```
+
+  5. 最后调用disconnect()方法将这个HTTP连接关闭
+
+     ```kotlin
+     connection.disconnect()
+     ```
+
+**代码示例：**
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        sendRequestBtn.setOnClickListener {
+            sendRequestWithHttpURLConnection()
+        }
+    }
+
+    private fun sendRequestWithHttpURLConnection() {
+        // 开启线程发送网络请求
+        thread {
+            var connection: HttpURLConnection? = null
+            try {
+                val response = StringBuilder()
+                val url = URL("https://www.baidu.com")
+                connection = url.openConnection() as HttpURLConnection // 获取http连接
+                connection.connectTimeout = 8000 // 设置连接超时的毫秒数
+                connection.readTimeout = 8000 // 设置读取超时的毫秒数
+                val input = connection.inputStream // 获取服务器返回的输出流
+                // 对获取到的输入流进行读取
+                val reader = BufferedReader(InputStreamReader(input))
+                reader.use {
+                    reader.forEachLine {
+                        response.append(it)
+                    }
+                }
+                showResponse(response.toString())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                connection?.disconnect()
+            }
+        }
+    }
+
+    private fun showResponse(response: String) {
+        runOnUiThread {
+            // 在这里进行UI操作，将结果显示到界面上
+            responseText.text = response
+        }
+    }
+}
+```
+
+### 使用OkHttp
+
+- OkHttp是由的Square公司开发的，OkHttp不仅在接口封装上做得简单易用，就连在底层实现上也是自成一派，比起原生的HttpURLConnection，可以说是有过之而无不及，现在已经成了广大Android开发者首选的网络通信库，开源地址：https://github.com/square/okhttp
+
+- 使用OKHttp：
+
+  1. 添加OkHttp依赖库
+
+     ```kotlin
+     dependencies { 
+     	... 
+     	implementation 'com.squareup.okhttp3:okhttp:4.1.0' 
+     }
+     ```
+
+     添加上述依赖会自动下载两个库：一个是OkHttp 库，一个是Okio库，后者是前者的通信基础
+
+  2. 创建一个OkHttpClient的实例
+
+     ```kotlin
+     val client = OkHttpClient()
+     ```
+
+  3. 想要发起一条HTTP请求，就需要创建一个Request对象 
+
+     ```kotlin
+     val request = Request.Builder().build()
+     ```
+
+     上述代码只是创建了一个空的Request对象，并没有什么实际作用，我们可以在最终的build()方法之前连缀很多其他方法来丰富这个Request对象。比如可以通过url()方法来设置目标的网络地址
+
+     ```kotlin
+     val request = Request.Builder() 
+     	.url("https://www.baidu.com") 
+     	.build()
+     ```
+
+  4. 调用OkHttpClient的newCall()方法来创建一个Call对象，并调用它的execute()方法来发送请求并获取服务器返回的数据
+
+     ```kotlin
+     val response = client.newCall(request).execute()
+     ```
+
+  5. Response对象就是服务器返回的数据了，我们可以使用如下写法来得到返回的具体内容
+
+     ```kotlin
+     val responseData = response.body?.string()
+     ```
+
+  6. 如果是发起一条POST请求，会比GET请求稍微复杂一点，我们需要先构建一个RequestBody对象来存放待提交的参数
+
+     ```kotlin
+     val requestBody = FormBody.Builder() 
+     	.add("username", "admin") 
+     	.add("password", "123456") 
+     	.build()
+     ```
+
+     然后在Request.Builder 中调用一下post()方法，并将RequestBody对象传入
+
+     ```kotlin
+     val request = Request.Builder() 
+     	.url("https://www.baidu.com") 
+     	.post(requestBody) 
+     	.build()
+     ```
+
+     接下来的操作就和GET请求一样了，调用execute()方法来发送请求并获取服务器返回的数据即可
+
+**使用OkHttp改写HttpURLConnection示例：**
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        sendRequestBtn.setOnClickListener {
+            sendRequestWithOkHttp()
+        }
+    }
+
+    private fun sendRequestWithOkHttp() {
+        thread {
+            try {
+                val client = OkHttpClient() // 创建一个OkHttpClient实例
+                val request = Request.Builder().url("https://www.qq.com").build() // 创建一个Request对象
+                val response = client.newCall(request).execute() // 创建一个Call对象，并调用execute()方法来发送请求并获取服务器返回的数据
+                val responseData = response.body?.string() // 得到返回的具体内容
+                if (responseData != null){ // 如果返回不为空
+                    showResponse(responseData) // 更新视图内容
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun showResponse(response: String) {
+        runOnUiThread { // runOnUiThread()方法其实就是对异步消息处理机制进行了一层封装，它背后的工作原理和Handler是一模一样的
+            // 在这里进行UI操作，将结果显示到界面上
+            responseText.text = response
+        }
+    }
+}
+```
+
+### Volley网络通信框架
+
+1. 导入框架
+2. 通过Volley.newRequestQueue方法，获得一个RequestQueue实例，传入上下文
+3. 创建一个StringRequest对象，第一个参数传入请求方式，第二个参数传入要访问的地址，第三个参数传入Response.Listener处理返回成功之后的逻辑，第四个参数传入Response.ErrorListener处理返回失败的逻辑
+
+```kotlin
+class VolleyActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_volley)
+        requestBtn.setOnClickListener {
+            val queue = Volley.newRequestQueue(this)
+            val url = "http://192.168.1.108/get_data.json"
+            val request = StringRequest(
+                Request.Method.GET,
+                url,
+                Response.Listener {
+                    textView.text = it
+                },
+                Response.ErrorListener {
+                    it.printStackTrace()
+                }
+            )
+            queue.add(request)
+        }
+    }
+}
+```
+
+
+
+## 解析XML格式数据
+
+### Pull解析方式
+
+1. 通过`XmlPullParserFactory.newInstance().newPullParser()`获取XmlPullParser对象，然后调用setInput方法将XML数据以流的方式传入
+2. 然后开始解析，调用getEventType方法得到当前解析事件，然后在while循环中不断解析，如果不等于XmlPullParser.END_DOCUMENT就说明解析未完成，调用next()方法就可以获取下一个解析事件
+3. 在while循环中，通过getName方法获取当前节点名，判断是否为自己想取出数据的节点，如果是就调用nextText()方法获取节点的内容
+
+```kotlin
+private fun parseXMLWithPull(xmlData: String) {
+    try {
+        val factory = XmlPullParserFactory.newInstance()
+        val xmlPullParser = factory.newPullParser() // 获取XmlPullParser对象
+        xmlPullParser.setInput(StringReader(xmlData))
+        var eventType = xmlPullParser.eventType // 获取当前解析事件
+        var id = ""
+        var name = ""
+        var version = ""
+        while (eventType != XmlPullParser.END_DOCUMENT) { // 如果解析事件不等于XmlPullParser.END_DOCUMENT，说明解析未完成
+            val nodeName = xmlPullParser.name // 通过getName得到当前节点的名字
+            when (eventType) {
+                // 开始解析某个节点
+                XmlPullParser.START_TAG -> {
+                    when (nodeName) {
+                        "id" -> id = xmlPullParser.nextText()
+                        "name" -> name = xmlPullParser.nextText()
+                        "version" -> version = xmlPullParser.nextText()
+                    }
+                }
+                // 完成解析某个节点
+                XmlPullParser.END_TAG -> {
+                    if ("app" == nodeName) {
+                        Log.d(TAG, "id is $id")
+                        Log.d(TAG, "name is $name")
+                        Log.d(TAG, "version is $version")
+                    }
+                }
+            }
+            eventType = xmlPullParser.next() // 获取下一个解析事件
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+```
+
+### SAX解析方式
+
+1. 编写一个类继承DefaultHandler，重写五个方法，startDocument()方法会在开始XML解析的时候调用，startElement()方法会在开始解析某个节点的时候调用，characters()方法会在获取节点中内容的时候调用，endElement()方法会在完成解析某个节点的时候调用，endDocument()方法会在完成整个XML解析的时候调用
+2. 在startDocument中初始化参数；解析某个节点时，startElement就会调用，localName就是当前节点名；解析节点具体内容时就会调用characters方法，根据节点名判断，取出内容；完成解析某个节点就会调用endElement方法，进行打印，因为id、name、version都可以包含换行符回车，所有在打印之前调用trim()方法，最后打印结束清空StringBuilder
+
+```kotlin
+class ContentHandler : DefaultHandler() {
+
+    val TAG = "CHEN_"
+
+    private var nodeName = ""
+    private lateinit var id: StringBuilder
+    private lateinit var name: StringBuilder
+    private lateinit var version: StringBuilder
+
+    override fun startDocument() { // 在开始解析XML时调用
+        id = StringBuilder()
+        name = StringBuilder()
+        version = StringBuilder()
+    }
+
+    override fun startElement(
+        uri: String,
+        localName: String,
+        qName: String,
+        attributes: Attributes
+    ) { // 开始解析某个节点时调用
+        // 记录当前节点名
+        nodeName = localName
+        Log.d(TAG, "uri is $uri")
+        Log.d(TAG, "localName is $localName")
+        Log.d(TAG, "qName is $qName")
+        Log.d(TAG, "attributes is $attributes")
+    }
+
+    override fun characters(ch: CharArray?, start: Int, length: Int) { // 获取节点内容时调用
+        // 根据节点名判断将内容添加到哪一个StringBuilder中
+        when (nodeName) {
+            "id" -> id.append(ch,start,length)
+            "name" -> name.append(ch,start,length)
+            "version" -> version.append(ch,start,length)
+        }
+    }
+
+    override fun endElement(uri: String?, localName: String?, qName: String?) { // 完成解析某个节点时调用
+        if ("app" == localName){
+            Log.d(TAG, "id is ${id.toString().trim()}")
+            Log.d(TAG, "name is ${name.toString().trim()}")
+            Log.d(TAG, "version is ${version.toString().trim()}")
+            // StringBuilder清空
+            id.setLength(0)
+            name.setLength(0)
+            version.setLength(0)
+        }
+    }
+
+    override fun endDocument() { // 完成XML解析时调用
+    }
+}
+```
+
+3. 在活动页面创建一个SAXParserFactory对象，然后获取XMLReader对象，编写ContentHandler实例设置到XMLReader中，最后调用parse()开始解析
+
+```kotlin
+private fun parseXMLWithSAX(xmlData: String) {
+    try {
+        val factory = SAXParserFactory.newInstance()
+        val xmlReader = factory.newSAXParser().xmlReader
+        val handler = ContentHandler()
+        // 将ContentHandler实例设置到XMLReader中
+        xmlReader.contentHandler = handler
+        // 开始执行解析
+        xmlReader.parse(InputSource(StringReader(xmlData)))
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+```
+
+## 解析JSON格式数据
+
+### 使用JSONObject
+
+解析JSNO数组
+
+1. 创建一个JSONArray对象，传入要解析的JSNO字符串
+2. 遍历创建的JSONArray对象，调用getJSONObject方法，取出的每个元素都是JSONObject
+3. 调用JSONObject的getString方法，传入键名，即可取出
+
+```kotlin
+private fun parseJSONWithJSONObject(jsonData: String) {
+    try {
+        val jsonArray = JSONArray(jsonData) // 创建一个JSON对象，传入要解析的JSON
+        for (i in 0 until jsonArray.length()){
+            val jsonObject = jsonArray.getJSONObject(i) // 获取JSONObject
+            val id = jsonObject.getString("id") // 取出id
+            val name = jsonObject.getString("name") // 取出name
+            val version = jsonObject.getString("version") // 取出version
+            Log.d(TAG,"id is $id")
+            Log.d(TAG,"name is $name")
+            Log.d(TAG,"version is $version")
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+```
+
+### 使用GSON
+
+> GSON可以将一段JSON格式的字符串自动映射成对象，不需要我们收到编写代码进行解析
+
+解析JSNO数组
+
+1. 导入依赖
+
+   ```groovy
+   implementation 'com.google.code.gson:gson:2.8.6'
+   ```
+
+2. 创建一个GSON对象，要解析JSON数组就要借助TypeToken创建期望解析的数据类型，然后将JSON格式的字符串和数据类型传入GSON对象的fromJson方法中，就会得到一个对象数组
+3. 最后遍历对象数组，取出想要的值
+
+```kotlin
+private fun parseJSONWithGSON(jsonData: String) {
+    val gson = Gson()
+    val typeOf = object : TypeToken<List<App>>() {}.type
+    val appList = gson.fromJson<List<App>>(jsonData, typeOf)
+    for (app in appList) {
+        Log.d(TAG, "id is ${app.id}")
+        Log.d(TAG, "name is ${app.name}")
+        Log.d(TAG, "version is ${app.version}")
+    }
+}
+```
+
+## 网络请求回调
+
+1. 网络操作代码可以复用，可以创建一个工具来复用代码
+
+   ```kotlin
+   object HttpUtil {
+       fun sendHttpRequest(address: String): String {
+           var connection: HttpURLConnection? = null
+           try {
+               val response = StringBuilder()
+               val url = URL(address)
+               connection = url.openConnection() as HttpURLConnection
+               connection.connectTimeout = 8000
+               connection.readTimeout = 8000
+               val input = connection.inputStream
+               val reader = BufferedReader(InputStreamReader(input))
+               reader.use {
+                   reader.forEachLine {
+                       response.append(it)
+                   }
+               }
+               return response.toString()
+           } catch (e: Exception) {
+               e.printStackTrace()
+               return e.message.toString()
+           } finally {
+               connection?.disconnect()
+           }
+       }
+   }
+   ```
+
+2. 网络操作不能在主线程中运行，所以说要开启一个子线程，要在工具类中开启子线程的话，响应的数据是无法返回的，解决办法：
+
+   1. 创建一个接口，写一个结束回调方法和一个错误回到方法
+
+      ```kotlin
+      interface HttpCallbackListener {
+          fun onFinish(response: String)
+          fun onError(e: Exception)
+      }
+      ```
+
+   2. 在sendHttpRequest方法中添加接口为参数，开启线程，将原本的返回结果改为接口的回调方法
+
+   ```kotlin
+   fun sendHttpRequest(address: String, listener: HttpCallbackListener) {
+       thread {
+           var connection: HttpURLConnection? = null
+           try {
+               val response = StringBuilder()
+               val url = URL(address)
+               connection = url.openConnection() as HttpURLConnection
+               connection.connectTimeout = 8000
+               connection.readTimeout = 8000
+               val input = connection.inputStream
+               val reader = BufferedReader(InputStreamReader(input))
+               reader.use {
+                   reader.forEachLine {
+                       response.append(it)
+                   }
+               }
+               // 回调onFinish方法
+               listener.onFinish(response.toString())
+           } catch (e: Exception) {
+               e.printStackTrace()
+               // 回调onError方法
+               listener.onError(e)
+           } finally {
+               connection?.disconnect()
+           }
+       }
+   }
+   ```
+
+3. 调用
+
+   ```kotlin
+   HttpUtil.sendHttpRequest("http://10.0.2.2/get_data.json",object : HttpCallbackListener{
+       override fun onFinish(response: String) {
+           // 得到服务器返回的具体内容
+           parseJSONWithGSON(response) // 解析JSON数据
+       }
+   
+       override fun onError(e: Exception) {
+           // 在这里对异常情况进行处理
+       }
+   })
+   ```
+
+**使用OkHttp：**
+
+1. 在Util工具类中添加sendOkHttpRequest方法，因为OkHttp有自带的回调接口okhttp3.Callback，所以说可以直接调用；在client.newCall中没有直接调用execute方法，而是调用enqueue方法，并将回调接口传入，OkHttp会在enqueue方法内开启子线程，然后会在子线程中执行HTTP请求，并将结果回到到okhttp3.Callback中
+
+   ```kotlin
+   fun sendOkHttpRequest(address: String, callback: okhttp3.Callback) {
+       val client = OkHttpClient()
+       val request = Request.Builder().url(address).build()
+       client.newCall(request).enqueue(callback)
+   }
+   ```
+
+2. 调用
+
+   ```kotlin
+   HttpUtil.sendOkHttpRequest("http://10.0.2.2/get_data.json", object : Callback {
+       override fun onResponse(call: Call, response: Response) {
+           // 得到服务器返回的具体内容
+           val responseData = response.body?.string()
+           if (responseData != null) {
+               parseJSONWithGSON(responseData)
+           }
+       }
+       override fun onFailure(call: Call, e: IOException) {
+           // 这里对异常情况进行处理
+       }
+   })
+   ```
+
+## 网络库：Retrofit
+
+### 基本用法
+
+1. 添加依赖库
+
+   ```groovy
+   implementation 'com.squareup.retrofit2:retrofit:2.6.1'
+   implementation 'com.squareup.retrofit2:converter-gson:2.6.1'
+   ```
+
+   添加上述第一条依赖会自动将Retrofifit 、OkHttp和Okio这几个库一起下载，无须再手动引入OkHttp库。Retrofifit 还会将服务器返回的JSON数据自动解析成对象，因此上述第二条依赖就是一个Retrofifit 的转换库，它是借助GSON来解析JSON数据的，所以会自动将GSON库一起下载下来，这样也不用手动引入GSON库了
+
+2. 新增App类
+
+   ```kotlin
+   class App(val id: String, val name: String, val version: String)
+   ```
+
+3. 根据服务器接口的功能进行归类，创建不同种类的接口文件，并在其中定义对应具体服务器接口的方法
+
+   ```kotlin
+   interface AppService {
+       @GET("get_data.json")
+       fun getAppData(): Call<List<App>>
+   }
+   ```
+
+   注意在getAppData()方法上面添加的注解，这里使用了一个@GET注解，表示当调用getAppData()方法时Retrofifit会发起一条GET请求，请求的地址就是我们在@GET注解中传入的具体参数；getAppData()方法的返回值必须声明成Retrofifit中内置的Call类型，并通过泛型来指定服务器响应的数据应该转换成什么对象
+
+4. 最后在活动页面编写代码：
+
+   1. Retrofit.Builder来构建一个Retrofifit 对象，其中baseUrl()方法用于指定所有Retrofifit请求的根路径，addConverterFactory()方法用于指定Retrofifit 在解析数据时所使用的转换库，这里指定成GsonConverterFactory
+   2. 调用创建了Retrofifit对象的create()方法，并传入具体Service接口所对应的Class类型，创建一个该接口的动态代理对象（有了动态代理对象之后，就可以随意调用接口中定义的所有方法，Retrofifit会自动执行具体的处理）
+   3. 调用AppService的getAppData()方法时，会返回一个`Call<List<App>>`对象，这时再调用一下它的enqueue()方法，Retrofifit就会根据注解中配置的服务器接口地址去进行网络请求了，服务器响应的数据会回调到enqueue()方法中传入的Callback实现里面（当发起请求的时候，Retrofifit会自动在内部开启子线程，当数据回调到Callback中之后，Retrofifit又会自动切换回主线程）
+   4. 最后在Callback的onResponse()方法中，调用response.body()方法将会得到Retrofifit解析后的对象，也就是`List<App>`类型的数据，最后遍历List，将其中的数据打印出来即可
+
+   ```kotlin
+   val retrofit = Retrofit.Builder().baseUrl("http://10.0.2.2/")
+       .addConverterFactory(GsonConverterFactory.create()).build()
+   val appService = retrofit.create(AppService::class.java)
+   appService.getAppData().enqueue(object : Callback<List<App>> {
+       override fun onFailure(call: Call<List<App>>, t: Throwable) {
+           t.printStackTrace()
+       }
+       override fun onResponse(call: Call<List<App>>, response: Response<List<App>>) {
+           val list = response.body()
+           if (list != null) {
+               for (app in list) {
+                   Log.d(TAG, "id is ${app.id}")
+                   Log.d(TAG, "name is ${app.name}")
+                   Log.d(TAG, "version is ${app.version}")
+               }
+           }
+       }
+   })
+   ```
+
+### 处理复杂的接口地址类型
+
+- 服务器接口地址：`GET http://example.com/get_data.json `
+
+  对应到Retrofifit当中，使用如下的写法：
+
+  ```kotlin
+  interface ExampleService { 
+  	@GET("get_data.json") 
+  	fun getData(): Call<Data> 
+  }
+  ```
+
+- 接口地址中的部分内容是动态变化的：`GET http://example.com/<page>/get_data.json `，`<page>`部分代表页数，传入不同的页数，服务器返回的数据也会不同
+
+  对应到Retrofifit当中，使用如下的写法：
+
+  ```kotlin
+  interface ExampleService { 
+  	@GET("{page}/get_data.json") 
+  	fun getData(@Path("page") page: Int): Call<Data> 
+  }
+  ```
+
+  在@GET注解指定的接口地址当中，使用了一个{page}的占位符，然后又在getData()方法中添加了一个page参数，并使用@Path("page")注解来声明这个参数。当调用getData()方法发起请求时，Retrofifit就会自动将page参数的值替换到占位符的位置，从而组成一个合法的请求地址
+
+- 服务器接口要求传入一系列的参数：`GET http://example.com/get_data.json?u=<user>&t=<token> `
+
+  这是一种标准的带参数GET请求的格式。接口地址的最后使用问号来连接参数部分，每个参数都是一个使用等号连接的键值对，多个参数之间使用“&”符号进行分隔
+
+  Retrofifit 针对这种带参数的GET请求，专门提供了一种语法支持：
+
+  ```kotlin
+  interface ExampleService { 
+  	@GET("get_data.json") 
+  	fun getData(@Query("u") user: String, @Query("t") token: String): Call<Data>
+  }
+  ```
+
+  这里在getData()方法中添加了user和token这两个参数，并使用@Query注解对它们进行声明。这样当发起网络请求的时候，Retr ofifit 就会自动按照带参数GET请求的格式将这两个参数构建到请求地址当中
+
+### Retrofifit构建器的最佳写法
+
+1. 新建一个ServiceCreator单例类
+
+   ```kotlin
+   object ServiceCreator { 
+   	private const val BASE_URL = "http://10.0.2.2/" 
+       
+   	private val retrofit = Retrofit.Builder() 
+   		.baseUrl(BASE_URL) 
+   		.addConverterFactory(GsonConverterFactory.create()) 
+   		.build() 
+       
+   	fun <T> create(serviceClass: Class<T>): T = retrofit.create(serviceClass)
+   }
+   ```
+
+2. 调用
+
+   ```kotlin
+   val appService = ServiceCreator.create(AppService::class.java)
+   ```
+
+- 使用泛型实化改进：
+
+  ```kotlin
+  object ServiceCreator { 
+  	... 
+  	inline fun <reified T> create(): T = create(T::class.java) 
+  }
+  ```
+
+  调用
+
+  ```kotlin
+  val appService = ServiceCreator.create<AppService>()
+  ```
+
+
+
+# 其他
+
+## 通知
+
+### 创建通知渠道
+
+1. 从系统服务中获取通知管理器
+
+   ```kotlin
+   val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+   ```
+
+2. 使用NotificationChannel类构建一个通知渠道，并调用NotifificationManager的createNotificationChannel()方法完成创建
+
+   ```kotlin
+   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { 
+   	val channel = NotificationChannel(channelId, channelName, importance)
+   	manager.createNotificationChannel(channel) 
+   }
+   ```
+
+   创建一个通知渠道至少需要渠道ID、渠道名称以及重要等级这3个参数，其中渠道ID可以随便定义，只要保证全局唯一性就可以。渠道名称是给用户看的，需要可以清楚地表达这个渠道的用途。通知的重要等级主要有IMPORTANCE_HIGH、IMPORTANCE_DEFAULT、IMPORTANCE_LOW、IMPORTANCE_MIN这几种，对应的重要程度依次从高到低
+
+### 通知的基本用法
+
+**创建通知：**
+
+1. 创建Notification对象，AndroidX库中提供了一个NotificationCompat类，使用这个类的构造器创建Notification对象，就可以保证我们的程序在所有Android系统版本上都能正常工作了
+
+   ```kotlin
+   val notification = NotificationCompat.Builder(context, channelId).build()
+   ```
+
+   NotificationCompat.Builder的构造函数中接收两个参数：第一个参数是context；第二个参数是渠道ID，需要和我们在创建通知渠道时指定的渠道ID相匹配才行
+
+2. 在build()方法之前连缀任意多的设置方法来创建一个丰富的Notification对象，setContentTitle()方法用于指定通知的标题内容，setContentText()方法用于指定通知的正文内容，setSmallIcon()方法用于设置通知的小图标（只能使用纯alpha图层的图片进行设置，小图标会显示在系统状态栏上），setLargeIcon()方法用于设置通知的大图标
+
+3. 最后调用NotifificationManager的notify()方法就可以让通知显示出来，第一个参数是id，要保证为每个通知指定的id都是不同的；第二个参数则是Notification对象，这里直接将我们刚刚创建好的Notification对象传入即可
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val manager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager // 从系统服务中获取通知管理器
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // 如果当前系统版本大于Android8
+            val channel =
+                NotificationChannel(
+                    "normal",
+                    "Normal",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ) // 构建一个通知渠道
+            manager.createNotificationChannel(channel) // 完成创建通知渠道
+        }
+        sendNotice.setOnClickListener {
+            val notification = NotificationCompat.Builder(this, "normal")
+                .setContentTitle("This is content title") // 设置通知标题
+                .setContentText("This is content text") // 设置通知内容
+                .setSmallIcon(R.drawable.small_icon) // 设置小图标
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.large_icon)) // 设置大图标
+                .build()
+            manager.notify(1, notification) // 发送通知
+        }
+    }
+}
+```
+
+**加入点击功能：**
+
+1. 使用Intent构建要跳转的活动
+
+2. 将构建好的Intent对象传入PendingIntent的getActivity方法中，得到PendingIntent实例
+
+   第一个参数依旧是Context；第二个参数一般用不到，传入0即可；第三个参数是一个Intent对象，我们可以通过这个对象构建出PendingIntent的“意图”；第四个参数用于确定PendingIntent的行为，有FLAG_ONE_SHOT、FLAG_NO_CREATE、FLAG_CANCEL_CURRENT和FLAG_UPDATE_CURRENT这4种值可选，通常情况下这个参数传入0就可以了
+
+3. 最后在NotificationCompat.Builder中调用setContentIntent()方法，把它作为参数传入即可
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        
+        val intent = Intent(this, NotificationActivity::class.java) // 创建一个要启动NotificationActivity的意图
+        val pi = PendingIntent.getActivity(this, 0, intent, 0) // 构建PendingIntent实例
+        
+        val manager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager // 从系统服务中获取通知管理器
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { // 如果当前系统版本大于Android8
+            val channel =
+                NotificationChannel(
+                    "normal",
+                    "Normal",
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ) // 构建一个通知渠道
+            manager.createNotificationChannel(channel) // 完成创建通知渠道
+        }
+        sendNotice.setOnClickListener {
+            val notification = NotificationCompat.Builder(this, "normal")
+                .setContentTitle("This is content title") // 设置通知标题
+                .setContentText("This is content text") // 设置通知内容
+                .setSmallIcon(R.drawable.small_icon) // 设置小图标
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.large_icon)) // 设置大图标
+                .setContentIntent(pi) // 设置PendingIntent
+                .build()
+            manager.notify(1, notification) // 发送通知
+        }
+    }
+}
+```
+
+**设置点击后消失：**
+
+两种方法：
+
+1. 在NotificationCompat.Builder中再连缀一个setAutoCancel()方法，并传入true，就表示当点击这个通知的时候，通知会自动取消
+
+   ```kotlin
+   val notification = NotificationCompat.Builder(this, "normal") 
+   	... 
+   	.setAutoCancel(true) 
+   	.build()
+   ```
+
+2. 显式地调用NotifificationManager的cancel()方法将它取消，参数应传入发出通知时的id
+
+   ```kotlin
+   class NotificationActivity : AppCompatActivity() {
+       override fun onCreate(savedInstanceState: Bundle?) {
+           super.onCreate(savedInstanceState)
+           setContentView(R.layout.activity_notification)
+           val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+           manager.cancel(1)
+       }
+   }
+   ```
+
+### 通知的进阶技巧
+
+setStyle()方法：这个方法允许我们构建出富文本的通知内容。也就是说，通知中不光可以有文字和图标，还可以包含更多的东西。setStyle()方法接收一个NotificationCompat.Style参数，这个参数就是用来构建具体的富文本信息的，如长文字、图片等
+
+**显示一段长文字：**
+
+使用setStyle()方法，创建一个NotificationCompat.BigTextStyle对象，这个对象就是用于封装长文字信息的，只要调用它的bigText()方法并将文字内容传入就可以了
+
+```kotlin
+val notification = NotificationCompat.Builder(this, "normal")
+	...
+    .setStyle(NotificationCompat.BigTextStyle().bigText("Learn how to build notifications, send and sync data, and use voice actions. Get the officialAndroid IDE and developer tools to build apps for Android."))
+    .build()
+```
+
+**显示一张大图片：**
+
+仍然是调用的setStyle()方法，在参数中创建了一个NotificationCompat.BigPictureStyle对象，这个对象就是用于设置大图片的，然后调用它的bigPicture()方法并将图片传入。将图片通过BitmapFactory的decodeResource()方法将图片解析成Bitmap对象，再传入bigPicture()方法中就可以
+
+```kotlin
+val notification = NotificationCompat.Builder(this, "normal")
+	...
+    .setStyle(NotificationCompat.BigPictureStyle().bigPicture(
+        BitmapFactory.decodeResource(resources, R.drawable.big_image)))
+    .build()
+```
+
+## 调用摄像头和相册
+
+### 调用摄像头拍照
+
+1. 创建File对象，用于存储拍照后的图片
+
+2. 将File转成Uri对象，如果运行设备的系统版本低于Android7.0，就调用Uri的fromFile()方法将File对象转换成Uri对象，这个Uri对象标识着output_image.jpg这张图片的本地真实路径。否则，就调用FileProvider的getUriForFile()方法将File对象转换成一个封装过的Uri对象
+
+   FileProvider则是一种特殊的ContentProvider ，它使用了和ContentProvider类似的机制来对数据进行保护，可以选择性地将封装过的Uri共享给外部，从而提高了应用的安全性
+
+3. 构建一个Intent对象，并将这个Intent的action指定为`android.media.action.IMAGE_CAPTURE`，再调用Intent的putExtra()方法指定图片的输出地址，这里填入刚刚得到的Uri对象，最后调用startActivityForResult()启动Activity
+
+4. 重写onActivityResult()方法，接收返回的照片，如果发现拍照成功，就可以调用BitmapFactory的decodeStream()方法将output_image.jpg这张照片解析成Bitmap对象，然后把它设置到ImageView中显示出来
+
+5. 最后需要在AndroidManifest注册ContentProvider
+
+   ```xml
+   <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+       package="com.example.cameraalbumapplication">
+   
+       <application
+           android:allowBackup="true"
+           android:icon="@mipmap/ic_launcher"
+           android:label="@string/app_name"
+           android:roundIcon="@mipmap/ic_launcher_round"
+           android:supportsRtl="true"
+           android:theme="@style/AppTheme">
+          
+           <provider
+               android:name="androidx.core.content.FileProvider"
+               android:authorities="com.example.cameraalbumapplication.fileprovider"
+               android:exported="false"
+               android:grantUriPermissions="true">
+               <meta-data
+                   android:name="android.support.FILE_PROVIDER_PATHS"
+                   android:resource="@xml/file_paths" />
+           </provider>
+           ...
+       </application>
+   </manifest>
+   ```
+
+   android:name属性的值是固定的，而android:authorities属性的值必须和刚才FileProvider.getUriForFile()方法中的第二个参数一致。另外，这里还在<provider>
+
+   标签的内部使用`<meta-data>`指定Uri的共享路径，并引用了一个@xml/file_paths资源
+
+   ```xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <paths xmlns:android="http://schemas.android.com/apk/res/android">
+       <external-path name="my_images" path="/" />
+   </paths>
+   ```
+
+   external-path就是用来指定Uri共享路径的，name属性的值可以随便填，path属性的值表示共享的具体路径。这里使用一个单斜线表示将整个SD卡进行共享，当然你也可以仅共享存放output_image.jpg 这张图片的路径
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    private val takePhoto = 1
+    lateinit var imageUri: Uri
+    lateinit var outputImage: File
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        takePhotoBtn.setOnClickListener {
+            // 创建File对象，用于存储拍照后的图片
+            outputImage = File(externalCacheDir, "output_image.jpg")
+            if (outputImage.exists()) { // 如果文件存在
+                outputImage.delete() // 删除文件
+            }
+            outputImage.createNewFile() // 创建一个新文件
+            imageUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { // 如果安卓版本大于7.0
+                FileProvider.getUriForFile(
+                    this, // 第一个参数传入Context
+                    "com.example.cameraalbumapplication.fileprovider", // 第二个参数传入任意字符串
+                    outputImage // 第三个参数传入刚刚创建的File对象
+                )
+            } else { // 小于7.0
+                Uri.fromFile(outputImage) // 将File对象直接转换成Uri对象
+            }
+            // 启动相机程序
+            val intent = Intent("android.media.action.IMAGE_CAPTURE") // 创建一个指向系统相机的Intent对象
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri) // 指向图片的输出地址
+            startActivityForResult(intent, takePhoto) // 启动活动
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            takePhoto -> {
+                if (resultCode == Activity.RESULT_OK) { // 如果有结果返回
+                    // 将拍的照片显示出来
+                    val bitmap =
+                        BitmapFactory.decodeStream(contentResolver.openInputStream(imageUri))
+                    // imageView.setImageBitmap(bitmap)
+                    imageView.setImageBitmap(rotateIfRequired(bitmap)) // 设置图片
+                }
+            }
+        }
+    }
+
+    private fun rotateIfRequired(bitmap: Bitmap): Bitmap { // 判断图片方向，如果发现图片需要进行旋转，那么就先将图片旋转相应的角度，然后再显示到界面上
+        val exif = ExifInterface(outputImage.path)
+        val orientation = exif.getAttributeInt(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_NORMAL
+        )
+        return when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270)
+            else -> bitmap
+        }
+    }
+
+    private fun rotateBitmap(bitmap: Bitmap, degree: Int): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degree.toFloat())
+        val rotatedBitmap = Bitmap.createBitmap(
+            bitmap, 0, 0, bitmap.width, bitmap.height,
+            matrix, true
+        )
+        bitmap.recycle() // 将不再需要的Bitmap对象回收
+        return rotatedBitmap
+    }
+}
+```
+
+### 从相册中选择图片
+
+1. 先构建了一个Intent 对象，并将它的action指定为Intent.ACTION_OPEN_DOCUMENT，表示打开系统的文件选择器
+2. 给这个Intent对象设置一些条件过滤，只允许可打开的图片文件显示出来，然后调用startActivityForResult()方法即可
+3. 调用返回Intent的getData()方法来获取选中图片的Uri，然后再调用getBitmapFromUri()方法将Uri转换成Bitmap对象，最终将图片显示到界面上
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    private val fromAlbum = 2
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        fromAlbumBtn.setOnClickListener {
+            // 打开文件选择器
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            // 指定只显示图片
+            intent.type = "image/*"
+            startActivityForResult(intent, fromAlbum)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            fromAlbum -> {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    data.data?.let { uri ->
+                        // 将选择的图片显示
+                        val bitmap = getBitmapFromUri(uri)
+                        imageView.setImageBitmap(bitmap)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getBitmapFromUri(uri: Uri) = contentResolver.openFileDescriptor(uri, "r")?.use {
+        BitmapFactory.decodeFileDescriptor(it.fileDescriptor)
+    }
+
+}
+```
+
+## 运行时申请权限
+
+1. 在Manifest中声明要申请的权限
+
+   ```xml
+   <uses-permission android:name="android.permission.CALL_PHONE" />
+   ```
+
+2. 使用ContextCompat.checkSelfPermission()判断权限是否开启，第一个参数传入上下文，第二个参数传入要开启的权限，如Manifest.permission.CALL_PHONE
+
+   如果返回值等于PackageManager.PERMISSION_GRANTED表示权限已开启，否则为开启
+
+3. 调用ActivityCompat.requestPermissions()方法向用户申请权限，第一个参数传入上下文，第二个参数传入要开启的权限字符串数组，第三个参数传入请求码，只要是唯一值就可以
+
+4. 重写onRequestPermissionsResult方法，该方法会在用户选择结束后调用，授权的结果会封装在grantResults参数中
+
+   可以先判断requestCode，和请求码相同表示相同请求，然后判断grantResults是否为空且等于PackageManager.PERMISSION_GRANTED，然后编写成功的代码逻辑
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        makeCall.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) // 判断用户给没给权限
+                    != PackageManager.PERMISSION_GRANTED) { // 如果不等于PERMISSION_GRANTED（0），表示未授权
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), 1) // 向用户申请权限
+            } else {
+                call() // 有权限就打电话
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) { // 用户选择后回调
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            1 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) { // 判断用户是否选择了开启
+                    call() // 打电话
+                } else {
+                    Toast.makeText(this, "没有权限", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun call() {
+        try {
+            val intent = Intent(Intent.ACTION_CALL) // 创建一个Intent对象，指定为系统内置打电话动作
+            intent.data = Uri.parse("tel:10086") // 指定data协议为tel，号码为10086
+            startActivity(intent) // 启动活动
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+}
+```
+
+## 读取系统联系人
+
+1. 调用ContentResolver的query方法，第一个参数传入ContactsContract.CommonDataKinds.Phone.CONTENT_URI，其余为null
+2. 遍历游标，取出联系人和手机号
+
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    private val contactsList = ArrayList<String>()
+    private lateinit var adapter: ArrayAdapter<String>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, contactsList)
+        contactsView.adapter = adapter
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_CONTACTS), 1)
+        } else {
+            readContacts()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            1 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    readContacts()
+                } else {
+                    Toast.makeText(this, "没有权限", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun readContacts() {
+        // 查询联系人数据
+        contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)?.apply {
+            while (moveToNext()) {
+                // 获取联系人姓名
+                val displayName = getString(getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                // 获取联系人手机号
+                val number = getString(getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                contactsList.add("$displayName\n$number")
+            }
+            adapter.notifyDataSetChanged()
+            close()
+        }
+    }
+}
+```
+
+
+
+
+

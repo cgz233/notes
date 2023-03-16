@@ -953,9 +953,9 @@ class DeadLockDemo extends Thread {
 
 ### 体系图
 
-<img src="https://image.cgz233.cn/images/202303132000397.png" alt="image-20230313200036033" style="zoom:50%;" /> 
+<img src="https://image.cgz233.cn/images/202303132000397.png" alt="image-20230313200036033" style="zoom: 80%;" /> 
 
-<img src="https://image.cgz233.cn/images/202303132000042.png" alt="image-20230313200045655" style="zoom: 50%;" /> 
+<img src="https://image.cgz233.cn/images/202303132000042.png" alt="image-20230313200045655" style="zoom: 67%;" /> 
 
 ### FileInputStream 和 FileOutputSteram
 

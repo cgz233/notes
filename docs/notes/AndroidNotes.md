@@ -5,9 +5,7 @@
 相关教程：
 
 - [Google官方开发者指南](https://developer.android.google.cn/guide)
-- [Android Studio 键盘快捷键 & Quick Reference](http://bbs.laoleng.vip/reference/docs/android-studio.html)
-- [Android基础入门教程 | 菜鸟教程 (runoob.com)](https://www.runoob.com/w3cnote/android-tutorial-intro.html)
-- [XML 教程 | 菜鸟教程 (runoob.com)](https://www.runoob.com/xml/xml-tutorial.html)
+- [Android Studio 键盘快捷键 & Quick Reference](http://ref.laoleng.vip/docs/android-studio.html)
 
 
 
@@ -8646,7 +8644,6 @@ class MainActivity : AppCompatActivity() {
     }
 }
 ```
-
 
 
 

@@ -4897,7 +4897,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 - data表
 
-  记录了用户的通讯录所有数据，包括手机号，显示名称等，但是里面的mimetype_id表示不同的数据类型，这与表mimetypes表中的*id*相对应，raw_contact_id 与下面的 raw_contacts表中的 id 相对应
+  记录了用户的通讯录所有数据，包括手机号，显示名称等，但是里面的mimetype_id表示不同的数据类型，这与表mimetypes表中的 id 相对应，raw_contact_id 与下面的 raw_contacts表中的 id 相对应
 
   ![image-20230313200656084](https://image.cgz233.cn/images/202303132006252.png) 
 

@@ -8151,6 +8151,71 @@ private fun parseJSONWithGSON(jsonData: String) {
 
   这里在getData()方法中添加了user和token这两个参数，并使用@Query注解对它们进行声明。这样当发起网络请求的时候，Retr ofifit 就会自动按照带参数GET请求的格式将这两个参数构建到请求地址当中
 
+### 通过Retrofit发出post请求
+
+1. 创建一个接口，内部定义一个方法，传入一个类，加上@POST注解，该类定义请求的参数，前面加@Body注解，最后返回Call接口，泛型指定为要返回的数据映射的类
+
+   ```kotlin
+   interface UserService {
+       @POST("/prod-api/api/login")
+       fun login(@Body request: LoginRequest?): Call<LoginResponse>
+   }
+   
+   data class LoginRequest(val username: String, val password: String)
+   
+   data class LoginResponse(val code: String, val msg: String, val token: String)
+   ```
+
+2. 通过Retrofit.Builder().baseUrl(URL地址).addConverterFactory(GsonConverterFactory.create()).build()构建一个Retrofit对象
+
+3. 通过构建好的Retrofit对象的create方法，传入创建好的接口，构建出接口的对象
+
+4. 调用接口的方法，传入Request对象
+
+5. 最后调用enqueue，传入CallBake接口，重写方法，URL加载错误回调onFailure，加载成功回调onResponse，Response即返回的数据
+
+   ```kotlin
+   class RetrofitActivity : AppCompatActivity() {
+       override fun onCreate(savedInstanceState: Bundle?) {
+           super.onCreate(savedInstanceState)
+           setContentView(R.layout.activity_retrofit)
+   
+           loginBtn.setOnClickListener {
+               val retrofit = Retrofit.Builder().baseUrl("http://192.168.1.211:10001/")
+                   .addConverterFactory(GsonConverterFactory.create()).build()
+               val userService = retrofit.create(UserService::class.java)
+               val loginRequest = LoginRequest(userEt.text.toString(), passwordEt.text.toString())
+               userService.login(loginRequest).enqueue(object : Callback<LoginResponse> {
+                   override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                       Toast.makeText(this@RetrofitActivity, "网络错误", Toast.LENGTH_SHORT).show()
+                       Log.e("CHEN_", "Request failed: " + t.message)
+   
+                   }
+   
+                   override fun onResponse(
+                       call: Call<LoginResponse>,
+                       response: Response<LoginResponse>
+                   ) {
+                       val loginResponse = response.body()
+                       Log.d("CHEN_", "Code: " + loginResponse?.code)
+                       Log.d("CHEN_", "Msg: " + loginResponse?.msg)
+                       Log.d("CHEN_", "Token: " + loginResponse?.token)
+                       if (loginResponse?.code == "200") {
+                           Toast.makeText(this@RetrofitActivity, "登录成功", Toast.LENGTH_SHORT).show()
+                       } else {
+                           Log.e("CHEN_", "Request failed: " + response.message())
+                           Toast.makeText(this@RetrofitActivity, "账号或密码错误", Toast.LENGTH_SHORT).show()
+                       }
+   
+                   }
+               })
+           }
+       }
+   }
+   ```
+
+
+
 ### Retrofifit构建器的最佳写法
 
 1. 新建一个ServiceCreator单例类
@@ -8954,6 +9019,230 @@ class MainActivity : AppCompatActivity() {
                start() // 启动Banner
            }
        }
+   }
+   ```
+
+Banner2.0使用方法：
+
+```kotlin
+homeBanner.apply {
+    adapter = object : BannerImageAdapter<String>(bannerImageList) { // 设置Banner的适配器
+        override fun onBindView(
+            p0: BannerImageHolder?,
+            p1: String?,
+            p2: Int,
+            p3: Int
+        ) {
+            if (p0?.imageView != null) {
+                Glide.with(context).load(bannerImageList[p2])
+                    .into(p0.imageView)
+            }
+        }
+}
+    addBannerLifecycleObserver(this@HomeFragment) // 设置添加横幅生命周期观察员
+    indicator = CircleIndicator(context) // 设置指示器，就是下边的小点
+    start()
+}
+```
+
+## 全局获取Context
+
+1. 创建一个类继承Application，在这个类中创建一个单例的Context对象，然后在onCreate方法中赋值为getApplicationContext
+
+   ```kotlin
+   class MyApplication : Application() {
+       companion object {
+           lateinit var context: Context
+       }
+   
+       override fun onCreate() {
+           super.onCreate()
+           context = applicationContext
+       }
+   }
+   ```
+
+2. 在Manifest中添加Application的name节点
+
+   ```kotlin
+   <application
+       android:name=".MyApplication"
+   	... ...
+   	>
+   	... ...
+   </application>
+   ```
+
+3. 调用`MyApplication.context`
+
+## 使用Intent传递对象
+
+### Serializable方式
+
+1. 创建一个要传递的对象类继承Serializable接口
+2. 在启动Activity之前，实例化创建的对象类
+3. 通过创建Intent的putExtra方法传入创建好的对象
+4. 在第二个Activity通过getIntent获取Intent对象，在通过getSerializableExtra方法传入key即可取出传来的对象
+
+```kotlin
+class SerializableActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_serialzable)
+        val person = Person()
+        person.name = "jack"
+        person.age = 18
+        button.setOnClickListener {
+            val intent = Intent(this, SerializableActivity2::class.java)
+            intent.putExtra("person", person)
+            startActivity(intent)
+        }
+    }
+}
+```
+
+```kotlin
+class SerializableActivity2 : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_serializable2)
+
+        val person = intent.getSerializableExtra("person") as Person
+
+        textView.text = "name = ${person.name} age = ${person.age}"
+    }
+}
+```
+
+### Parcelable方式
+
+1. 创建一个类继承自Parcelable，重写内部方法
+
+   ```kotlin
+   class Person : Parcelable {
+   
+       var name = ""
+       var age = 0
+   
+       override fun writeToParcel(parcel: Parcel, flags: Int) {
+           parcel.writeString(name) // 写出name
+           parcel.writeInt(age) // 写出age
+       }
+   
+       override fun describeContents(): Int {
+           return 0
+       }
+   
+       companion object CREATOR : Parcelable.Creator<Person> {
+           override fun createFromParcel(parcel: Parcel): Person {
+               val person = Person()
+               person.name = parcel.readString() ?: "" // 读取name
+               person.age = parcel.readInt() // 读取age
+               return person
+           }
+   
+           override fun newArray(size: Int): Array<Person?> {
+               return arrayOfNulls(size)
+           }
+       }
+   
+   }
+   ```
+
+2. 创建对象，通过Intent的putExtra方法传入，然后在第二个页面通过getParcelableExtra获取对象
+
+   ```kotlin
+   class SerializableActivity2 : AppCompatActivity() {
+       override fun onCreate(savedInstanceState: Bundle?) {
+           super.onCreate(savedInstanceState)
+           setContentView(R.layout.activity_serializable2)
+           val person = intent.getParcelableExtra<Person>("person") as Person
+   
+           textView.text = "name = ${person.name} age = ${person.age}"
+       }
+   }
+   ```
+
+3. Kotlin提供了添加注解的方式直接创建Parcelable，但需要将数据都封装在主构造函数中、
+
+   ```kotlin
+   @Parcelize
+   class Person(var name: String, var age: Int) : Parcelable
+   ```
+
+## Fragment+ViewPager+TabLayout实现主页的顶部页面导航
+
+1. 创建一个Fragment，并在布局中添加TabLayout和ViewPager
+
+   ```xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:orientation="vertical">
+   
+       <com.google.android.material.tabs.TabLayout
+           android:id="@+id/tableLayout"
+           app:tabMode="scrollable"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"/>
+   
+       <androidx.viewpager.widget.ViewPager
+           android:id="@+id/viewPager"
+           android:layout_width="match_parent"
+           android:layout_height="0dp"
+           android:layout_weight="1"/>
+   
+   </LinearLayout>
+   ```
+
+2. 创建ViewPager的适配器，传入FragmentManger，和Fragment集合，和一个标题集合，getPageTitle方法返回标题集合中的元素
+
+   ```kotlin
+   class HomeFragmentAdapter(
+       fragment: FragmentManager,
+       private val fragmentList: List<Fragment>,
+       private val titleList: List<String>
+   ) : FragmentStatePagerAdapter(fragment, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+       override fun getItem(position: Int): Fragment = fragmentList[position]
+   
+       override fun getCount(): Int = fragmentList.size
+   
+       override fun getPageTitle(position: Int): CharSequence = titleList[position]
+   
+   }
+   ```
+
+3. 在Fragment的onCreateView方法中返回一个视图，在onViewCreated方法中，初始化数据，设置ViewPager的适配器，以及调用TabLayout的setupWithViewPager方法，将ViewPager传入
+
+   ```kotlin
+   class HomeFragment : Fragment() {
+   
+       private val fragmentList = arrayListOf<Fragment>()
+       private val titleList = arrayListOf<String>()
+   
+       override fun onCreateView(
+           inflater: LayoutInflater, container: ViewGroup?,
+           savedInstanceState: Bundle?
+       ): View? {
+           return inflater.inflate(R.layout.fragment_home, container, false)
+       }
+   
+       override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+           super.onViewCreated(view, savedInstanceState)
+           initData()
+           viewPager.adapter = HomeFragmentAdapter(childFragmentManager, fragmentList, titleList)
+           tableLayout.setupWithViewPager(viewPager)
+       }
+   
+       private fun initData() {
+           for (i in 0 until 8) {
+               fragmentList.add(MainFragment.newInstance("Fragment$i"))
+               titleList.add("标题$i")
+           }
+       }
+   
    }
    ```
 

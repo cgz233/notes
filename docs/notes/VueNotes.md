@@ -1,5 +1,7 @@
 # Vue
 
+# Vue核心
+
 ## 初识Vue
 1. 想让Vue工作，就必须创建一个Vue实例，且要传入一个配置对象
 
@@ -1625,5 +1627,46 @@ v-show：条件渲染 (动态控制节点是否展示)
 </html>
 ```
 
+## 生命周期
 
+生命周期：
+
+1. 又名：生命周期回调函数、生命周期函数、生命周期钩子
+2. 是什么：Vue在关键时刻帮我们调用的一些特殊名称的函数
+3. 改，但函数的具体内容是程序员根据需求编写的
+4. 生命周期函数中的this指向是vm 或 组件实例对象
+
+常用的生命周期钩子：
+
+1. mounted: 发送ajax请求、启动定时器、绑定自定义事件、订阅消息等【初始化操作】
+2. beforeDestroy: 清除定时器、解绑自定义事件、取消订阅消息等【收尾工作】
+
+关于销毁Vue实例：
+
+1. 销毁后借助Vue开发者工具看不到任何信息
+2. 销毁后自定义事件会失效，但原生DOM事件依然有效
+3. 一般不会在beforeDestroy操作数据，因为即便操作数据，也不会再触发更新流程了
+
+<img src="https://image.cgz233.cn/images/202304121018468.png" alt="生命周期" style="zoom:50%;" /> 
+
+# Vue组件化编程
+
+## 脚手架文件结构
+
+	├── node_modules 
+	├── public
+	│   ├── favicon.ico: 页签图标
+	│   └── index.html: 主页面
+	├── src
+	│   ├── assets: 存放静态资源
+	│   │   └── logo.png
+	│   │── component: 存放组件
+	│   │   └── HelloWorld.vue
+	│   │── App.vue: 汇总所有组件
+	│   │── main.js: 入口文件
+	├── .gitignore: git版本管制忽略的配置
+	├── babel.config.js: babel的配置文件
+	├── package.json: 应用包配置文件 
+	├── README.md: 应用描述文件
+	├── package-lock.json：包版本控制文件
 

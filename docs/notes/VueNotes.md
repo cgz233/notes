@@ -1651,6 +1651,259 @@ v-show：条件渲染 (动态控制节点是否展示)
 
 # Vue组件化编程
 
+## 非单文件组件
+
+Vue中使用组件的三大步骤：
+
+1. 定义组件(创建组件)
+
+   使用Vue.extend(options)创建，其中options和new Vue(options)时传入的那个options几乎一样，但也有点区别
+
+   区别如下：
+
+   1.el不要写，为什么？ ——— 最终所有的组件都要经过一个vm的管理，由vm中的el决定服务哪个容器
+
+   2.data必须写成函数，为什么？ ———— 避免组件被复用时，数据存在引用关系
+
+   备注：使用template可以配置组件结构
+
+2. 注册组件
+
+   1. 局部注册：靠new Vue的时候传入components选项
+   2. 全局注册：靠Vue.component('组件名',组件)
+
+3. 使用组件(写组件标签)
+
+   `<school></school>`
+
+```html
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>基本使用</title>
+		<script type="text/javascript" src="../js/vue.js"></script>
+	</head>
+	<body>
+		<div id="root">
+			<hello></hello>
+			<hr>
+			<h1>{{msg}}</h1>
+			<hr>
+			<!-- 第三步：编写组件标签 -->
+			<school></school>
+			<hr>
+			<!-- 第三步：编写组件标签 -->
+			<student></student>
+		</div>
+
+		<div id="root2">
+			<hello></hello>
+		</div>
+	</body>
+
+	<script type="text/javascript">
+		Vue.config.productionTip = false
+
+		//第一步：创建school组件
+		const school = Vue.extend({
+			template:`
+				<div class="demo">
+					<h2>学校名称：{{schoolName}}</h2>
+					<h2>学校地址：{{address}}</h2>
+					<button @click="showName">点我提示学校名</button>	
+				</div>
+			`,
+			// el:'#root', //组件定义时，一定不要写el配置项，因为最终所有的组件都要被一个vm管理，由vm决定服务于哪个容器。
+			data(){
+				return {
+					schoolName:'哈哈哈',
+					address:'济南'
+				}
+			},
+			methods: {
+				showName(){
+					alert(this.schoolName)
+				}
+			},
+		})
+
+		//第一步：创建student组件
+		const student = Vue.extend({
+			template:`
+				<div>
+					<h2>学生姓名：{{studentName}}</h2>
+					<h2>学生年龄：{{age}}</h2>
+				</div>
+			`,
+			data(){
+				return {
+					studentName:'张三',
+					age:18
+				}
+			}
+		})
+		
+		//第一步：创建hello组件
+		const hello = Vue.extend({
+			template:`
+				<div>	
+					<h2>你好啊！{{name}}</h2>
+				</div>
+			`,
+			data(){
+				return {
+					name:'Tom'
+				}
+			}
+		})
+		
+		//第二步：全局注册组件
+		Vue.component('hello',hello)
+
+		//创建vm
+		new Vue({
+			el:'#root',
+			data:{
+				msg:'你好啊！'
+			},
+			//第二步：注册组件（局部注册）
+			components:{
+				school,
+				student
+			}
+		})
+
+		new Vue({
+			el:'#root2',
+		})
+	</script>
+</html>
+```
+
+**注意：**
+
+1. 关于组件名:
+
+   一个单词组成：
+
+   - 第一种写法(首字母小写)：school
+   - 第二种写法(首字母大写)：School
+
+   多个单词组成：
+
+   - 第一种写法(kebab-case命名)：my-school
+
+   - 第二种写法(CamelCase命名)：MySchool (需要Vue脚手架支持)
+
+   备注：
+
+   - 组件名尽可能回避HTML中已有的元素名称，例如：h2、H2都不行
+
+   - 可以使用name配置项指定组件在开发者工具中呈现的名字
+
+2. 关于组件标签:
+
+   第一种写法：`<school></school>`
+
+   第二种写法：`<school/>`
+
+   备注：不用使用脚手架时，`<school/>`会导致后续组件不能渲染
+
+3. 一个简写方式：
+
+   const school = Vue.extend(options) 可简写为：const school = options
+
+**关于VueComponent：**
+
+1. school组件本质是一个名为VueComponent的构造函数，且不是程序员定义的，是Vue.extend生成的
+2. 我们只需要写`<school/>`或`<school></school>`，Vue解析时会帮我们创建school组件的实例对象，即Vue帮我们执行的：new VueComponent(options)
+3. 每次调用Vue.extend，返回的都是一个全新的VueComponent
+4. 关于this指向：
+   1. 组件配置中：data函数、methods中的函数、watch中的函数、computed中的函数 它们的this均是**VueComponent实例对象**
+   2. new Vue(options)配置中：data函数、methods中的函数、watch中的函数、computed中的函数 它们的this均是**Vue实例对象**
+
+**重要的内置关系：**
+
+1. 一个重要的内置关系：`VueComponent.prototype.__proto__ === Vue.prototype`
+2. 为什么要有这个关系：让组件实例对象（vc）可以访问到 Vue原型上的属性、方法
+
+## 单文件组件
+
+**.vue文件的组成：**
+
+1. 模板页面
+
+   ```vue
+   <template>
+   
+   	页面模板
+   
+   </template>
+   ```
+
+2. JS 模块对象
+
+   ```vue
+   <script>
+   
+   export default {
+   
+       data() {return {}}, 
+   
+       methods: {}, 
+   
+       computed: {}, 
+   
+       components: {}
+   }
+   
+   </script>
+   ```
+
+3. 样式
+
+   ```vue
+   <style>
+   
+   	样式定义
+   
+   </style>
+   ```
+
+**基本使用：**
+
+1. 引入组件
+2. 映射成标签
+3. 使用组件标签
+
+```vue
+<template>
+	<div>
+		<School></School>
+		<Student></Student>
+	</div>
+</template>
+
+<script>
+	//引入组件
+	import School from './School.vue'
+	import Student from './Student.vue'
+
+	export default {
+		name:'App',
+		components:{
+			School,
+			Student
+		}
+	}
+</script>
+```
+
+
+
+# Vue脚手架
+
 ## 脚手架文件结构
 
 	├── node_modules 
@@ -1669,4 +1922,165 @@ v-show：条件渲染 (动态控制节点是否展示)
 	├── package.json: 应用包配置文件 
 	├── README.md: 应用描述文件
 	├── package-lock.json：包版本控制文件
+
+## 关于不同版本的Vue
+
+1. vue.js与vue.runtime.xxx.js的区别：
+
+   1. vue.js是完整版的Vue，包含：核心功能 + 模板解析器
+   2. vue.runtime.xxx.js是运行版的Vue，只包含：核心功能；没有模板解析器
+
+2. 因为vue.runtime.xxx.js没有模板解析器，所以不能使用template这个配置项，需要使用render函数接收到的createElement函数去指定具体内容
+
+   ```javascript
+   //创建Vue实例对象---vm
+   new Vue({
+   	el:'#app',
+   	//render函数完成了这个功能：将App组件放入容器中
+   	render: h => h(App),
+   })
+   ```
+
+## vue.config.js配置文件
+
+1. 使用`vue inspect > output.js`可以查看到Vue脚手架的默认配置。
+2. 使用vue.config.js可以对脚手架进行个性化定制，详情见：https://cli.vuejs.org/zh
+
+```javascript
+module.exports = {
+  pages: {
+    index: {
+      //入口
+      entry: 'src/main.js',
+    },
+  },
+	lintOnSave:false, //关闭语法检查
+}
+```
+
+## ref属性
+
+1. 被用来给元素或子组件注册引用信息（id的替代者）
+2. 应用在html标签上获取的是真实DOM元素，应用在组件标签上是组件实例对象（vc）
+3. 使用方式：
+   1. 打标识：```<h1 ref="xxx">.....</h1>``` 或 ```<School ref="xxx"></School>```
+   2. 获取：```this.$refs.xxx```
+
+```vue
+<template>
+	<div>
+		<h1 v-text="msg" ref="title"></h1>
+		<button ref="btn" @click="showDOM">点我输出上方的DOM元素</button>
+		<School ref="sch"/>
+	</div>
+</template>
+
+<script>
+	//引入School组件
+	import School from './components/School'
+
+	export default {
+		name:'App',
+		components:{School},
+		data() {
+			return {
+				msg:'欢迎学习Vue！'
+			}
+		},
+		methods: {
+			showDOM(){
+				console.log(this.$refs.title) //真实DOM元素
+				console.log(this.$refs.btn) //真实DOM元素
+				console.log(this.$refs.sch) //School组件的实例对象（vc）
+			}
+		},
+	}
+</script>
+```
+
+## props配置项
+
+1. 功能：让组件接收外部传过来的数据
+
+2. 传递数据：`<Demo name="xxx" :age="18"/>`
+
+3. 接收数据：
+
+   1. 第一种方式（只接收）：`props:['name'] `
+
+   2. 第二种方式（限制类型）：`props:{name:String}`
+
+   3. 第三种方式（限制类型、限制必要性、指定默认值）：
+
+      ```js
+      props:{
+      	name:{
+      	type:String, //类型
+      	required:true, //必要性
+      	default:'老王' //默认值
+      	}
+      }
+      ```
+
+
+注意：props是只读的，Vue底层会监测你对props的修改，如果进行了修改，就会发出警告，若业务需求确实需要修改，那么请复制props的内容到data中一份，然后去修改data中的数据
+
+## mixin(混入)
+
+1. 功能：可以把多个组件共用的配置提取成一个混入对象
+
+2. 使用方式：
+
+   第一步定义混合：
+
+   ```javascript
+   {
+       data(){....},
+       methods:{....}
+       ....
+   }
+   ```
+
+   第二步使用混入：
+
+   全局混入：```Vue.mixin(xxx)```
+   局部混入：```mixins:['xxx']	```
+
+## 插件
+
+1. 功能：用于增强Vue
+
+2. 本质：包含install方法的一个对象，install的第一个参数是Vue，第二个以后的参数是插件使用者传递的数据
+
+3. 定义插件：
+
+   ```js
+   对象.install = function (Vue, options) {
+       // 1. 添加全局过滤器
+       Vue.filter(....)
+   
+       // 2. 添加全局指令
+       Vue.directive(....)
+   
+       // 3. 配置全局混入(合)
+       Vue.mixin(....)
+   
+       // 4. 添加实例方法
+       Vue.prototype.$myMethod = function () {...}
+       Vue.prototype.$myProperty = xxxx
+   }
+   ```
+
+4. 使用插件：`Vue.use()`
+
+## scoped样式
+
+1. 作用：让样式在局部生效，防止冲突。
+2. 写法：`<style scoped>`
+
+```vue
+<style scoped>
+	样式内容
+</style>
+```
 

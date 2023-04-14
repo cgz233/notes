@@ -9,6 +9,6 @@
 - [CSS随手记](notes/CSS随手记.md)
 - [JavaScriptNotes](notes/JavaScriptNotes.md)
 - [VueNotes](notes/VueNotes.md)
-- [VueNote简](notes/VueNote简.md)
+- [uniappNotes](notes/uniappNotes.md)
 - [MySQLNotes](notes/MySQLNotes.md)
 - [GitNotes](notes/GitNotes.md)

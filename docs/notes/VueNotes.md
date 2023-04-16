@@ -2411,6 +2411,8 @@ module.exports = {
 
   vue3中要使用vuex的4版本 `npm i vuex`
 
+<img src="https://image.cgz233.cn/images/202304162058041.png" style="zoom:33%;" /> 
+
 ## 搭建Vuex环境
 
 1. 创建文件：`src/store/index.js`
@@ -3087,4 +3089,4 @@ module.exports = {
    VueComponent.$hello()
    ```
 
-   
+2. 

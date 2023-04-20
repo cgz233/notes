@@ -1,4 +1,4 @@
-# Android开发笔记
+# Android Notes
 
 > by.Xiao_Chen
 

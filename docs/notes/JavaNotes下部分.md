@@ -1,28 +1,4 @@
-# Java Study Notes 下部分
-
-> by.Xiao_Chen
-
-因内容较多，JavaStudyNotes分为三部分：
-
-- 上部分：初识Java、Java基础语法、面向对象初级、中级和高级部分
-- 中部分：枚举、注解、异常、常用类（包装类、String、Math、Object、System、日期类等）、Lambda表达式、集合
-- 下部分：泛型、图形界面、线程、IO流、网络编程、反射、正则表达式、数据库编程
-
-笔记仅供参考，查找方法更适合去[JavaAPI文档](https://docs.oracle.com/javase/8/docs/api/)，[中文文档下载（密码:chen）](https://wwxg.lanzoub.com/b02pzrdha) 
-
-一些教程推荐：
-
-- [XiaoChen/JavaStudyNotes](https://gitee.com/gitee-xiaochen/java-study-notes/blob/master/JavaNotes.md)
-
-- [菜鸟Java教程](https://www.runoob.com/java/java-tutorial.html)
-
-- [Quick Reference Java 备忘清单](http://bbs.laoleng.vip/reference/docs/java.html)
-
-- [廖雪峰Java教程](https://www.liaoxuefeng.com/wiki/1252599548343744)
-
-- [鱼皮Java学习路线](https://luxian.yupi.icu/#/roadmap/Java%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF)
-
-
+# Java Notes 下部分
 
 # 泛型
 

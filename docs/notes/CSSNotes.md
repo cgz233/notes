@@ -421,7 +421,7 @@
 
   4. 图示：
 
-     <img src="https://image.cgz233.cn/images/202304200906583.png" alt="image-20230420090557997" style="zoom: 25%;" /> 
+     <img src="https://image.cgz233.cn/images/202304200906583.png" alt="image-20230420090557997" style="zoom: 15%;" /> 
 
 
 
@@ -617,8 +617,11 @@
 - 作用：控制一行文字的高度
 - 可选值：
   1. normal ：由浏览器根据文字大小决定的一个默认值
+
   2. 像素( px )
+
   3. 数字：参考自身 font-size 的倍数（很常用）
+
   4. 百分比：参考自身 font-size 的百分比
 
 - 备注：由于字体设计原因，文字在一行中，并不是绝对垂直居中，若一行中都是文字，不会太影响观感
@@ -648,6 +651,7 @@
 - 应用场景：
 
   1. 对于多行文字：控制行与行之间的距离
+
   2. 对于单行文字：让 height 等于 line-height ，可以实现文字垂直居中
 
   备注：由于字体设计原因，靠上述办法实现的居中，并不是绝对的垂直居中，但如果一行中都是文字，不会太影响观感
@@ -655,6 +659,7 @@
 ### 文本对齐_垂直
 
 1. **顶部：**无需任何属性，在垂直方向上，默认就是顶部对齐
+
 2. **居中：**对于单行文字，让 height = line-height 即可
 
 3. **底部：**对于单行文字，目前一个临时的方式：
@@ -734,8 +739,11 @@ cursor: url("./arrow.png"),pointer;
 ## CSS长度单位
 
 1. px ：像素
+
 2. em ：相对元素 font-size 的倍数
+
 3. rem ：相对根字体大小，html标签就是根
+
 4. % ：相对父元素计算
 
 ## 元素的显示模式
@@ -747,15 +755,21 @@ cursor: url("./arrow.png"),pointer;
 特点：
 
 1. 在页面中**独占一行**，不会与任何元素共用一行，是从上到下排列的
+
 2. 默认宽度：撑满**父元素**
+
 3. 默认高度：由**内容**撑开
+
 4. **可以**通过 CSS 设置宽高
 
 元素列表：
 
 1. 主体结构标签：`<html>`、`<body>`
+
 2. 排版标签：`<h1>`~`<h6>`、`<hr>`、`<p>`、`<pre>`、`<div>`
+
 3. 列表标签：`<ul>`、`<ol>`、`<li>`、`<dl>`、`<dt>`、`<dd>`
+
 4. 表格相关标签：`<table>`、`<tbody>`、`<thead>`、`<tfoot>`、`<tr>`、`<caption>`
 
 5. `<form>` 与 `<option>`
@@ -769,12 +783,15 @@ cursor: url("./arrow.png"),pointer;
 1. 在页面中**不独占一行**，一行中不能容纳下的行内元素，会在下一行继续从左到右排列
 
 2. 默认宽度：由**内容**撑开
+
 3. 默认高度：由**内容**撑开
+
 4. **无法**通过 CSS 设置宽高
 
 元素列表：
 
 1. 文本标签： `<br>`、`<em>`、`<strong>`、`<sup>`、`<sub>`、`<del>`、`<ins>`
+
 2. `<a>`与`<label>`
 
 ### 行内块元素(inline-block)
@@ -792,8 +809,11 @@ cursor: url("./arrow.png"),pointer;
 元素列表：
 
 1. 图片：`<img>`
+
 2. 单元格：`<td>`、`<th>`
+
 3. 表单控件：`<input>`、`<textarea>`、`<select>`、`<button>`
+
 4. 框架标签：`<iframe>`
 
 ## 修改元素的样式显示
@@ -835,7 +855,9 @@ CSS 会把所有的 HTML 元素都看成一个盒子，所有的样式也都是�
 ## 关于默认宽度
 
 - 所谓的默认宽度，就是不设置width属性时，元素所呈现出来的宽度
+
 - 总宽度 = 父的content - 自身的左右margin
+
 - 内容区的宽度 = 父的content - 自身的左右margin - 自身的左右border - 自身的左右padding
 
 ## 盒子的内间距(padding)
@@ -851,14 +873,19 @@ CSS 会把所有的 HTML 元素都看成一个盒子，所有的样式也都是�
 padding 复合属性的使用规则：
 
 1. padding: 10px; 四个方向内边距都是10px 
+
 2. padding: 10px 20px; 上10px，左右20px（上下、左右）
+
 3. padding: 10px 20px 30px; 上10px，左右 20px ，下 30px（上、左右、下）
+
 4. padding: 10px 20px 30px 40px; 上10px，右20px，下30px，左40px（上、右、下、左）
 
 注意点：
 
 1. padding的值不能为负数
+
 2. 行内元素的左右内边距是没问题的，上下内边距不能完美的设置
+
 3. 块级元素、行内块元素，四个方向内边距都可以完美设置
 
 ## 盒子边框(border)
@@ -970,10 +997,13 @@ padding 复合属性的使用规则：
 元素一般都些默认的样式，例如：
 
 1. `<a>`元素：下划线、字体颜色、鼠标小手
+
 2. `<h1>`~`<h6>` 元素： 文字加粗、文字大小、上下外边距
 
 3. `<p>`元素：上下外边距
+
 4. `<ul>`、`ol`元素：左内边距
+
 5. body 元素： 8px 外边距（4个方向）
 
 优先级：元素的默认样式 > 继承的样式，所以如果要重置元素的默认样式，选择器一定要直接选择器到该元素
@@ -1010,6 +1040,7 @@ padding 复合属性的使用规则：
 解决方案：
 
 1. 去掉换行和空格（不推荐）
+
 2. 给父元素设置`font-size:0`，再给需要显示文字的元素，单独设置字体大小（推荐）
 
 ## 行内块的幽灵空白问题
@@ -1021,6 +1052,374 @@ padding 复合属性的使用规则：
 解决方案：
 
 1. 给行行内块设置vertical，值不为baseline即可，设置为middel、bottom、top均可
+
 2. 若父元素中只有一张图片，设置图片为display:block
+
 3. 给父元素设置font-size: 0 。如果该行内块内部还有文本，则需单独设置fontsize
+
+# 浮动
+
+## 浮动的简介
+
+- 在最初，浮动是用来实现文字环绕图片效果的，现在浮动是主流的页面布局方式之一
+
+- 浮动相关属性
+
+  |CSS 属性 |功能| 属性值|
+  |--|--|--|
+  |float |设置浮动| left：设置左浮动<br/>right：设置右浮动<br/>none：不浮动，默认值 |
+  |clear |清除浮动<br/>清除前面兄弟元素浮动元素的响应| left：清除前面左浮动的影响<br/>right：清除前面右浮动的影响<br/>both：清除前面左右浮动的影响 |
+
+
+## 元素浮动后的特点
+
+1. 脱离文档流
+
+2. 不管浮动前是什么元素，浮动后：默认宽与高都是被内容撑开（尽可能小），而且可以设置宽高
+
+3. 不会独占一行，可以与其他元素共用一行
+
+4. 不会margin合并，也不会margin塌陷，能够完美的设置四个方向的margin和padding
+
+3. 不会像行内块一样被当做文本处理（没有行内块的空白问题）
+
+## 浮动产生的影响
+
+**产生的影响：**
+
+- 对兄弟元素的影响：后面的兄弟元素，会占据浮动元素之前的位置，在浮动元素的下面；对前面的兄弟无影响
+- 对父元素的影响：不能撑起父元素的高度，导致父元素高度塌陷；但父元素的宽度依然束缚浮动的元素
+
+**解决浮动产生的影响：**
+
+1. 给父元素指定高度
+
+2. 给父元素也设置浮动，带来其他影响
+
+3. 给父元素设置`overflow:hidden`
+
+4. 在所有浮动元素的最后面，添加一个块级元素，并给该块级元素设置`clear:both`
+
+5. 给浮动元素的父元素，设置伪元素，通过伪元素清除浮动，原理与方案四相同
+
+   ```css
+   .parent::after {
+       content: "";
+       display: block;
+       clear:both;
+   }
+   ```
+
+布局中的一个原则：设置浮动的时候，兄弟元素要么全都浮动，要么全都不浮动
+
+## 利用浮动创建布局
+
+<img src="https://image.cgz233.cn/images/202304211557176.png" alt="image-20230421155652617" style="zoom: 33%;" /> 
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .leftfix {
+            float: left;
+        }
+
+        .rightfix {
+            float: right;
+        }
+
+        .cleanfix::after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+
+        .outer {
+            width: 960px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .banner {
+            margin-top: 10px;
+        }
+
+        .logo {
+            width: 200px;
+        }
+
+        .banner1 {
+            width: 540px;
+            margin: 0 10px;
+        }
+
+        .banner2 {
+            width: 200px;
+        }
+
+        .logo,
+        .banner1,
+        .banner2 {
+            height: 80px;
+            background-color: #ccc;
+            line-height: 80px;
+        }
+
+        .menu {
+            width: 960px;
+            height: 30px;
+            background-color: #ccc;
+            margin-top: 10px;
+            line-height: 30px;
+        }
+
+        .content {
+            margin-top: 10px;
+        }
+
+        .item1,
+        .item2 {
+            height: 198px;
+            width: 368px;
+            border: 1px solid black;
+            margin-right: 10px;
+            line-height: 198px;
+        }
+
+        .bottom {
+            margin-top: 10px;
+        }
+
+        .item3,
+        .item4,
+        .item5,
+        .item6 {
+            height: 198px;
+            width: 178px;
+            border: 1px solid black;
+            margin-right: 10px;
+            line-height: 198px;
+        }
+
+        .item7,
+        .item8,
+        .item9 {
+            height: 128px;
+            width: 198px;
+            border: 1px solid black;
+            line-height: 128px;
+        }
+
+        .item8 {
+            margin: 10px 0;
+        }
+
+        .footer {
+            height: 60px;
+            width: 960px;
+            background-color: #ccc;
+            margin-top: 10px;
+            line-height: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="outer">
+        <div class="banner cleanfix">
+            <div class="logo leftfix">logo</div>
+            <div class="banner1 leftfix">banner1</div>
+            <div class="banner2 leftfix">banner2</div>
+        </div>
+        <div class="menu">菜单</div>
+        <div class="content cleanfix">
+            <div class="left leftfix">
+                <div class="top cleanfix">
+                    <div class="item1 leftfix">栏目一</div>
+                    <div class="item2 leftfix">栏目二</div>
+                </div>
+                <div class="bottom cleanfix">
+                    <div class="item3 leftfix">栏目三</div>
+                    <div class="item4 leftfix">栏目四</div>
+                    <div class="item5 leftfix">栏目五</div>
+                    <div class="item6 leftfix">栏目六</div>
+                </div>
+            </div>
+            <div class="right rightfix">
+                <div class="item7">栏目七</div>
+                <div class="item8">栏目八</div>
+                <div class="item9">栏目九</div>
+            </div>
+        </div>
+        <div class="footer">页脚</div>
+    </div>
+</body>
+
+</html>
+```
+
+# 定位
+
+## 相对定位
+
+**如何设置相对定位？**
+
+- 给元素设置`position:relative`即可实现相对定位
+
+- 可以使用`left`、`right`、`top`、`bottom`四个属性调整位置
+
+**相对定位的参考点在哪里？**
+
+- 相对自己原来的位置
+
+**相对定位的特点：**
+
+1. 不会脱离文档流，元素位置的变化，只是视觉效果上的变化，不会对其他元素产生任何影响
+
+2. 定位元素的显示层级比普通元素高，无论什么定位，显示层级都是一样的
+
+   默认规则是：
+
+   - 定位的元素会盖在普通元素之上
+   - 都发生定位的两个元素，后写的元素会盖在先写的元素之上
+
+3. `left`不能和`right`一起设置，`top`和`bottom`不能一起设置
+
+4. 相对定位的元素，也能继续浮动，但不推荐这样做
+
+5. 相对行为的元素，也能通过 margin 调整位置，但不推荐这样做
+
+## 绝对定位
+
+**如何设置绝对定位？**
+
+- 给元素设置`position: absolute`即可实现绝对定位
+- 可以使用`left`、`right`、`top`、`bottom`四个属性调整位置
+
+**绝对定位的参考点在哪里？**
+
+- 参考它的包含块
+- 什么是包含块？
+  1. 对于没有脱离文档流的元素：包含块就是父元素
+  2. 对于脱离文档流的元素：包含块是第一个拥有定位属性的祖先元素（如果所有祖先都没定位，那包含块就是整个页面）
+
+**绝对定位元素的特点：**
+
+1. 脱离文档流，会对后面的兄弟元素、父元素有影响
+
+2. `left`不能和`right`一起设置，`top`和`bottom`不能一起设置
+
+3. 绝对定位、浮动不能同时设置，如果同时设置，浮动失效，以定位为主
+
+4. 绝对定位的元素，也能通过`margin`调整位置，但不推荐这样做
+
+5. 无论是什么元素（行内、行内块、块级）设置为绝对定位之后，都变成了定位元素
+
+   何为定位元素？ —— 默认宽、高都被内容所撑开，且能自由设置宽高
+
+## 固定定位
+
+**如何设置为固定定位？**
+
+- 给元素设置`position: fixed`即可实现固定定位
+- 可以使用`left`、`right`、`top`、`bottom`四个属性调整位置
+
+**固定定位的参考点在哪里？**
+
+- 参考它的视口
+
+  什么是视口？—— 对于 PC 浏览器来说，视口就是我们看网页的那扇“窗户”
+
+**固定定位元素的特点：**
+
+1. 脱离文档流，会对后面的兄弟元素、父元素有影响
+
+2. `left`不能和`right`一起设置，`top`和`bottom`不能一起设置
+
+3. 固定定位和浮动不能同时设置，如果同时设置，浮动失效，以固定定位为主
+
+4. 固定定位的元素，也能通过`margin`调整位置，但不推荐这样做
+
+5. 无论是什么元素（行内、行内块、块级）设置为固定定位之后，都变成了定位元素
+
+## 粘性定位
+
+**如何设置为粘性定位？**
+
+- 给元素设置`position:sticky`即可实现粘性定位
+- 可以使用`left`、`right`、`top`、`bottom`四个属性调整位置，不过最常用的是`top`值
+
+**粘性定位的参考点在哪里？**
+
+- 离它最近的一个拥有“滚动机制”的祖先元素，即便这个祖先不是最近的真实可滚动祖先
+
+**粘性定位元素的特点：**
+
+- 不会脱离文档流，它是一种专门用于窗口滚动时的新的定位方式
+
+- 最常用的值是`top`值
+
+- 粘性定位和浮动可以同时设置，但不推荐这样做
+
+- 粘性定位的元素，也能通过`margin`调整位置，但不推荐这样做
+
+## 定位层级
+
+1. 定位元素的显示层级比普通元素高，无论什么定位，显示层级都是一样的
+
+2. 如果位置发生重叠，默认情况是：后面的元素，会显示在前面元素之上
+
+3. 可以通过 css 属性`z-index`调整元素的显示层级
+
+4. `z-index`的属性值是数字，没有单位，值越大显示层级越高
+
+5. 只有定位的元素设置`z-index`才有效
+
+6. 如果`z-index`值大的元素，依然没有覆盖掉`z-index`值小的元素，那么请检查其包含块的层级
+
+## 定位的特殊应用
+
+**注意：**
+
+1. 发生固定定位、绝对定位后，元素都变成了定位元素，默认宽高被内容撑开，且依然可以设置宽高
+
+2. 发生相对定位后，元素依然是之前的显示模式
+
+3. 以下所说的特殊应用，只针对 绝对定位 和 固定定位 的元素，不包括相对定位的元素
+
+**让定位元素的宽充满包含块**
+
+1. 块宽想与包含块一致，可以给定位元素同时设置`left`和`right`为`0`
+
+2. 高度想与包含块一致，`top`和`bottom`设置为`0`
+
+**让定位元素在包含块中居中**
+
+1. 方案一：
+
+   ```css
+   left:0;
+   right:0;
+   top:0;
+   bottom:0;
+   margin:auto;
+   ```
+
+2. 方案二：
+
+   ```css
+   left: 50%;
+   top: 50%;
+   margin-left: 负的宽度一半;
+   margin-top: 负的高度一半;
+   ```
 

@@ -1423,3 +1423,148 @@ padding 复合属性的使用规则：
    margin-top: 负的高度一半;
    ```
 
+# 伸缩盒模型
+
+## 伸缩容器、伸缩项目
+
+- 伸缩容器：开启了 flex 的元素，就是：伸缩容器
+
+  1. 给元素设置： display:flex 或 display:inline-flex ，该元素就变为了伸缩容器
+
+  2. display:inline-flex 很少使用，因为可以给多个伸缩容器的父容器，也设置为伸缩容器
+
+  3. 一个元素可以同时是：伸缩容器、伸缩项目
+
+- 伸缩项目：伸缩容器所有子元素自动成为了：伸缩项目
+
+  1. 仅伸缩容器的子元素成为了伸缩项目，孙子元素、重孙子元素等后代，不是伸缩项目
+
+  2. 无论原来是哪种元素（块、行内块、行内），一旦成为了伸缩项目，全都会“块状化” 
+
+## 主轴与侧轴
+
+- 主轴：伸缩项目沿着主轴排列，主轴默认是水平的，默认方向是：从左到右（左边是起点，右边是终点）
+- 侧轴：与主轴垂直的就是侧轴，侧轴默认是垂直的，默认方向是：从上到下（上边是起点，下边是终点）
+
+## 主轴方向
+
+- 属性名：flex-direction
+
+- 常用值如下：
+
+  1. row ：主轴方向水平从左到右 —— 默认值
+  2. row-reverse ：主轴方向水平从右到左
+  3. column ：主轴方向垂直从上到下
+  4. column-reverse ：主轴方向垂直从下到上
+
+  <img src="https://image.cgz233.cn/images/202304261550303.png" alt="image-20230426155029421" style="zoom: 80%;" /> 
+
+## 主轴换行方式
+
+- 属性名：flex-wrap
+
+- 常用值如下：
+
+  1. nowrap ：默认值，不换行
+
+     <img src="https://image.cgz233.cn/images/202304261551683.png" alt="image-20230426155137048" style="zoom:67%;" /> 
+
+  2. wrap ：自动换行，伸缩容器不够自动换行
+
+     <img src="https://image.cgz233.cn/images/202304261551902.png" alt="image-20230426155153984" style="zoom:67%;" /> 
+
+  3. wrap-reverse ：反向换行
+
+     <img src="https://image.cgz233.cn/images/202304261558964.png" alt="image-20230426155809266" style="zoom:67%;" /> 
+
+## flex-flow
+
+- flex-flow 是一个复合属性，复合了 flex-direction 和 flex-wrap 两个属性，值没有顺序要求
+
+  ```css
+  flex-flow: row wrap;
+  ```
+
+## 主轴对齐方式
+
+- 属性名：justify-content
+
+- 常用值如下：
+
+  1. flex-start ：主轴起点对齐 —— 默认值
+  2. flex-end ：主轴终点对齐
+  3. center ：居中对齐
+  4. space-between ：均匀分布，两端对齐（最常用）
+  5. space-around ：均匀分布，两端距离是中间距离的一半
+  6. space-evenly ：均匀分布，两端距离与中间距离一致
+
+  <img src="https://image.cgz233.cn/images/202304261559959.png" alt="image-20230426155954374" style="zoom: 50%;" /> 
+
+## 侧轴对齐方式
+
+### 一行的情况
+
+- 所需属性：align-items
+
+- 常用值如下：
+
+  1. flex-start ：侧轴的起点对齐
+  2. flex-end ：侧轴的终点对齐
+  3. center ：侧轴的中点对齐
+  4. baseline : 伸缩项目的第一行文字的基线对齐。
+  5. stretch ：如果伸缩项目未设置高度，将占满整个容器的高度 —— （默认值）
+
+  <img src="https://image.cgz233.cn/images/202304261600821.png" alt="image-20230426160046105" style="zoom:50%;" /> 
+
+ 
+
+**多行的情况**
+
+- 所需属性：align-content
+
+- 常用值如下：
+
+  1. flex-start ：与侧轴的起点对齐
+
+  2. flex-end ：与侧轴的终点对齐
+
+  3. center ：与侧轴的中点对齐
+
+  4. space-between ：与侧轴两端对齐，中间平均分布
+
+  5. space-around ：伸缩项目间的距离相等，比距边缘大一倍
+
+  6. space-evenly : 在侧轴上完全平分
+
+  7. stretch ：占满整个侧轴 —— 默认值
+
+     <img src="https://image.cgz233.cn/images/202304261601766.png" alt="image-20230426160125891" style="zoom:50%;" /> 
+
+## 伸缩性
+
+### flex-basis
+
+- 概念： flex-basis 设置的是主轴方向的**基准长度**，会让宽度或高度失效。
+- 备注：主轴横向：宽度失效；主轴纵向：高度失效
+- 作用：浏览器根据这个属性设置的值，计算主轴上是否有多余空间，默认值 auto ，即：伸缩项目的宽或高
+
+### flex-grow（伸）
+
+- 概念： flex-grow 定义伸缩项目的放大比例，默认为 0 ，即：纵使主轴存在剩余空间，也不拉伸（放大）
+- 规则：
+  1. 若所有伸缩项目的 flex-grow 值都为 1 ，则：它们将等分剩余空间（如果有空间的话）。
+  2. 若三个伸缩项目的 flex-grow 值分别为： 1 、 2 、 3 ，则：分别瓜分到： 1/6 、 2/6 、3/6 的空间
+
+### flex-shrink（缩）
+
+- 概念： flex-shrink 定义了项目的压缩比例，默认为 1 ，即：如果空间不足，该项目将会缩小
+
+## flex复合属性
+
+flex 是复合属性，复合了：flex-grow、flex-shrink、flex-basis三个属性，默认值为 0 1 auto
+
+- 如果写 flex:1 1 auto ，则可简写为：flex:auto
+- 如果写 flex:1 1 0 ，则可简写为：flex:1
+- 如果写 flex:0 0 auto ，则可简写为：flex:none
+- 如果写 flex:0 1 auto ，则可简写为：flex:0 auto —— 即 flex 初始值
+

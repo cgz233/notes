@@ -5572,7 +5572,7 @@ public class SendMmsActivity extends AppCompatActivity implements View.OnClickLi
    }
    ```
 
-### 列表视图ListVie
+### 列表视图ListView
 
 - ListView 允许在页面上分行展示数据列表
 

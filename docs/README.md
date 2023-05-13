@@ -1,6 +1,7 @@
 # Notes-XiaoChen
 
 - [Java Notes](JavaNotes.md)
+- [Python Notes](notes/PythonNotes.md)
 - [Android Notes](notes/AndroidNotes.md)
 - [Kotlin Notes](notes/KotlinNotes.md)
 - [HTML Notes](notes/HTML随手记.md)

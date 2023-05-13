@@ -1541,5 +1541,1386 @@ history (历史)是对象，主要管理历史记录， 该对象与浏览器地
 | forward()   | 前进                                         |
 | go(参数)    | 前进后退 为正数前进n个页面 为负数后退n个页面 |
 
+## 本地存储
+
+###  localStorage
+
+- 作用: 数据可以长期保留在本地浏览器中，刷新页面和关闭页面，数据也不会丢失
+- 特性：以键值对的形式存储，并且存储的是字符串， 省略了window
+- 语法：
+  - 存储数据：`localStorage.setItem(key,value)`
+  - 读取数据：`localStroge.getItem(key)`
+  - 删除数据：`localStroge.removeItem(key)`
+
+### localStorage 存储复杂数据类型
+
+**问题：**本地只能存储字符串,无法存储复杂数据类型
+
+**解决：**需要将复杂数据类型转换成 JSON字符串,在存储到本地
+
+**语法：**JSON.stringify(复杂数据类型)
+
+JSON字符串：
+
+- 首先是1个字符串
+- 属性名使用双引号引起来，不能单引号
+- 属性值如果是字符串型也必须双引号
+
+~~~html
+<body>
+  <script>
+    // 本地存储复杂数据类型
+    const goods = {
+      name: '小米',
+      price: 1999
+    }
+    // localStorage.setItem('goods', goods)
+    // console.log(localStorage.getItem('goods'))
+
+    // 1. 把对象转换为JSON字符串  JSON.stringify
+    localStorage.setItem('goods', JSON.stringify(goods))
+    // console.log(typeof localStorage.getItem('goods'))
+
+  </script>
+</body>
+~~~
+
+**问题：**因为本地存储里面取出来的是字符串，不是对象，无法直接使用
+
+**解决： **把取出来的字符串转换为对象
+
+**语法：**JSON.parse(JSON字符串)
+
+~~~html
+<body>
+  <script>
+    // 本地存储复杂数据类型
+    const goods = {
+      name: '小米',
+      price: 1999
+    }
+    // localStorage.setItem('goods', goods)
+    // console.log(localStorage.getItem('goods'))
+
+    // 1. 把对象转换为JSON字符串  JSON.stringify
+    localStorage.setItem('goods', JSON.stringify(goods))
+    // console.log(typeof localStorage.getItem('goods'))
+
+    // 2. 把JSON字符串转换为对象  JSON.parse
+    console.log(JSON.parse(localStorage.getItem('goods')))
+
+  </script>
+</body>
+~~~
+
+## 正则表达式
+
+### 正则基本使用
+
+1. 定义规则
+
+   ~~~JavaScript
+   const reg =  /表达式/
+   ~~~
+
+   - 其中` / / `是正则表达式字面量
+   - 正则表达式也是`对象 `
+
+2. 使用正则
+
+   - `test()方法`用来查看正则表达式与指定的字符串是否匹配
+
+     test方法用于判断是否有符合规则的字符串，返回的是布尔值 找到返回true，否则false
+
+   - `exec()`方法 在一个指定字符串中执行一个搜索匹配
+
+     exec方法用于检索（查找）符合规则的字符串，找到返回数组，否则为 null
+
+~~~html
+<body>
+  <script>
+    // 正则表达式的基本使用
+    const str = 'web前端开发'
+    // 1. 定义规则
+    const reg = /web/
+
+    // 2. 使用正则  test()
+    console.log(reg.test(str))  // true  如果符合规则匹配上则返回true
+    console.log(reg.test('java开发'))  // false  如果不符合规则匹配上则返回 false
+  </script>
+</body>
+~~~
+
+### 元字符
+
+[正则表达式 - JavaScript | MDN (mozilla.org)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions)
+
+**边界符**
+
+| 边界符 | 说明               |
+| ------ | ------------------ |
+| ^      | 表示匹配行首的文本 |
+| $      | 表示匹配行尾的文本 |
+
+**量词**
+
+| 量词  | 说明             |
+| ----- | ---------------- |
+| *     | 重复零次或更多次 |
+| +     | 重复一次或更多次 |
+| ?     | 重复零次或一次   |
+| {n}   | 重复n次          |
+| {n,}  | 重复n次或更多次  |
+| {n,m} | 重复n到m次       |
+
+**范围**
+
+| 范围   | 说明                              |
+| ------ | --------------------------------- |
+| [abc]  | 匹配包含的单个字符，也就是只有abc |
+| [a-z]  | 连字符，指定字符范围，也就是a-z   |
+| [^abc] | 取反符，匹配除了abc以外的字符     |
+
+**字符类**
+
+| 字符类 | 说明                                                         |
+| ------ | ------------------------------------------------------------ |
+| \d     | 匹配0-9之间的任一数字，相当于`[0-9]`                         |
+| \D     | 匹配所有0-9以外的字符，相当于`[^0-9]`                        |
+| \w     | 匹配任意的字母、数字和下划线，相当于`[A-Za-z0-9_]`           |
+| \W     | 除所有字母、数字和下划线以外的字符，相当于`[^A-Za-z0-9_]`    |
+| \s     | 匹配空格(包括换行符、制表符、空格符等)，相等于`[\t\r\n\v\f]` |
+| \S     | 匹配非空格的字符，相当于`[^t\r\n\v\f]`                       |
+
+## 替换和修饰符
+
+replace 替换方法，可以完成字符的替换
+
+语法：`字符串.replace(/正则表达式/, '替换的文本')`
+
+~~~html
+<body>
+  <script>
+    // 替换和修饰符
+    const str = '欢迎大家学习前端，相信大家一定能学好前端，都成为前端大神'
+    // 1. 替换  replace  需求：把前端替换为 web
+    // 1.1 replace 返回值是替换完毕的字符串
+    // const strEnd = str.replace(/前端/, 'web') 只能替换一个
+  </script>
+</body>
+~~~
+
+修饰符约束正则执行的某些细节行为，如是否区分大小写、是否支持多行匹配等
+
+- i 是单词 ignore 的缩写，正则匹配时字母不区分大小写
+- g 是单词 global 的缩写，匹配所有满足正则表达式的结果
+
+~~~html
+<body>
+  <script>
+    // 替换和修饰符
+    const str = '欢迎大家学习前端，相信大家一定能学好前端，都成为前端大神'
+    // 1. 替换  replace  需求：把前端替换为 web
+    // 1.1 replace 返回值是替换完毕的字符串
+    // const strEnd = str.replace(/前端/, 'web') 只能替换一个
+
+    // 2. 修饰符 g 全部替换
+    const strEnd = str.replace(/前端/g, 'web')
+    console.log(strEnd) 
+  </script>
+</body>
+~~~
 
 
+
+# 进阶
+
+## 局部作用域
+
+局部作用域分为函数作用域和块作用域
+
+### 函数作用域
+
+在函数内部声明的变量只能在函数内部被访问，外部无法直接访问
+
+```html
+<script>
+  // 声明 counter 函数
+  function counter(x, y) {
+    // 函数内部声明的变量
+    const s = x + y
+    console.log(s) // 18
+  }
+  // 设用 counter 函数
+  counter(10, 8)
+  // 访问变量 s
+  console.log(s)// 报错
+</script>
+```
+
+总结：
+
+1. 函数内部声明的变量，在函数外部无法被访问
+2. 函数的参数也是函数内部的局部变量
+3. 不同函数内部声明的变量无法互相访问
+4. 函数执行完毕后，函数内部的变量实际被清空了
+
+### 块作用域
+
+在 JavaScript 中使用 `{}` 包裹的代码称为代码块，代码块内部声明的变量外部将【有可能】无法被访问
+
+```html
+<script>
+  {
+    // age 只能在该代码块中被访问
+    let age = 18;
+    console.log(age); // 正常
+  }
+  
+  // 超出了 age 的作用域
+  console.log(age) // 报错
+  
+  let flag = true;
+  if(flag) {
+    // str 只能在该代码块中被访问
+    let str = 'hello world!'
+    console.log(str); // 正常
+  }
+  
+  // 超出了 age 的作用域
+  console.log(str); // 报错
+  
+  for(let t = 1; t <= 6; t++) {
+    // t 只能在该代码块中被访问
+    console.log(t); // 正常
+  }
+  
+  // 超出了 t 的作用域
+  console.log(t); // 报错
+</script>
+```
+
+JavaScript 中除了变量外还有常量，常量与变量本质的区别是【常量必须要有值且不允许被重新赋值】，常量值为对象时其属性和方法允许重新赋值
+
+```html
+<script>
+  // 必须要有值
+  const version = '1.0.0';
+
+  // 不能重新赋值
+  // version = '1.0.1';
+
+  // 常量值为对象类型
+  const user = {
+    name: '小明',
+    age: 18
+  }
+
+  // 不能重新赋值
+  user = {};
+
+  // 属性和方法允许被修改
+  user.name = '小小明';
+  user.gender = '男';
+</script>
+```
+
+总结：
+
+1. `let` 声明的变量会产生块作用域，`var` 不会产生块作用域
+2. `const` 声明的常量也会产生块作用域
+3. 不同代码块之间的变量无法互相访问
+4. 推荐使用 `let` 或 `const`
+
+注：开发中 `let` 和 `const` 经常不加区分的使用，如果担心某个值会不小被修改时，则只能使用 `const` 声明成常量
+
+### 全局作用域
+
+`<script>` 标签和 `.js` 文件的【最外层】就是所谓的全局作用域，在此声明的变量在函数内部也可以被访问
+
+```html
+<script>
+  // 此处是全局
+  
+  function sayHi() {
+    // 此处为局部
+  }
+
+  // 此处为全局
+</script>
+```
+
+全局作用域中声明的变量，任何其它作用域都可以被访问，如下代码所示：
+
+```html
+<script>
+    // 全局变量 name
+    const name = '小明'
+  
+  	// 函数作用域中访问全局
+    function sayHi() {
+      // 此处为局部
+      console.log('你好' + name)
+    }
+
+    // 全局变量 flag 和 x
+    const flag = true
+    let x = 10
+  
+  	// 块作用域中访问全局
+    if(flag) {
+      let y = 5
+      console.log(x + y) // x 是全局的
+    }
+</script>
+```
+
+总结：
+
+1. 为 `window` 对象动态添加的属性默认也是全局的，不推荐！
+2. 函数中未使用任何关键字声明的变量为全局变量，不推荐！！！
+3. 尽可能少的声明全局变量，防止全局变量被污染
+
+JavaScript 中的作用域是程序被执行时的底层机制，了解这一机制有助于规范代码书写习惯，避免因作用域导致的语法错误。
+
+### 作用域链
+
+作用域链本质上是底层的变量查找机制，在函数被执行时，会优先查找当前函数作用域中查找变量，如果当前作用域查找不到则会依次逐级查找父级作用域直到全局作用域，如下代码所示：
+
+```html
+<script>
+  // 全局作用域
+  let a = 1
+  let b = 2
+
+  // 局部作用域
+  function f() {
+    let c
+    // let a = 10;
+    console.log(a) // 1 或 10
+    console.log(d) // 报错
+    
+    // 局部作用域
+    function g() {
+      let d = 'yo'
+      // let b = 20;
+      console.log(b) // 2 或 20
+    }
+    
+    // 调用 g 函数
+    g()
+  }
+
+  console.log(c) // 报错
+  console.log(d) // 报错
+  
+  f();
+</script>
+```
+
+总结：
+
+1. 嵌套关系的作用域串联起来形成了作用域链
+2. 相同作用域链中按着从小到大的规则查找变量
+3. 子作用域能够访问父作用域，父级作用域无法访问子级作用域
+
+### 闭包
+
+闭包是一种比较特殊和函数，使用闭包能够访问函数作用域中的变量。从代码形式上看闭包是一个做为返回值的函数，如下代码所示：
+
+```html
+<body>
+  <script>
+    // 1. 闭包 : 内层函数 + 外层函数变量
+    // function outer() {
+    //   const a = 1
+    //   function f() {
+    //     console.log(a)
+    //   }
+    //   f()
+    // }
+    // outer()
+
+    // 2. 闭包的应用： 实现数据的私有。统计函数的调用次数
+    // let count = 1
+    // function fn() {
+    //   count++
+    //   console.log(`函数被调用${count}次`)
+    // }
+
+    // 3. 闭包的写法  统计函数的调用次数
+    function outer() {
+      let count = 1
+      function fn() {
+        count++
+        console.log(`函数被调用${count}次`)
+      }
+      return fn
+    }
+    const re = outer()
+    // const re = function fn() {
+    //   count++
+    //   console.log(`函数被调用${count}次`)
+    // }
+    re()
+    re()
+    // const fn = function() { }  函数表达式
+    // 4. 闭包存在的问题： 可能会造成内存泄漏
+  </script>
+</body>
+```
+
+总结：
+
+1.怎么理解闭包？
+
+- 闭包 = 内层函数 + 外层函数的变量
+
+2.闭包的作用？
+
+- 封闭数据，实现数据私有，外部也可以访问函数内部的变量
+- 闭包很有用，因为它允许将函数与其所操作的某些数据（环境）关联起来
+
+3.闭包可能引起的问题？
+
+- 内存泄漏
+
+### 变量提升
+
+变量提升是 JavaScript 中比较“奇怪”的现象，它允许在变量声明之前即被访问
+
+```html
+<script>
+  // 访问变量 str
+  console.log(str + 'world!');
+
+  // 声明变量 str
+  var str = 'hello ';
+</script>
+```
+
+总结：
+
+1. 变量在未声明即被访问时会报语法错误
+2. 变量在声明之前即被访问，变量的值为 `undefined`
+3. `let` 声明的变量不存在变量提升，推荐使用 `let`
+4. 变量提升出现在相同作用域当中
+
+### 箭头函数
+
+箭头函数是一种声明函数的简洁语法，它与普通函数并无本质的区别，差异性更多体现在语法格式上
+
+```html
+<body>
+  <script>
+    // const fn = function () {
+    //   console.log(123)
+    // }
+    // 1. 箭头函数 基本语法
+    // const fn = () => {
+    //   console.log(123)
+    // }
+    // fn()
+    // const fn = (x) => {
+    //   console.log(x)
+    // }
+    // fn(1)
+    // 2. 只有一个形参的时候，可以省略小括号
+    // const fn = x => {
+    //   console.log(x)
+    // }
+    // fn(1)
+    // // 3. 只有一行代码的时候，我们可以省略大括号
+    // const fn = x => console.log(x)
+    // fn(1)
+    // 4. 只有一行代码的时候，可以省略return
+    // const fn = x => x + x
+    // console.log(fn(1))
+    // 5. 箭头函数可以直接返回一个对象
+    // const fn = (uname) => ({ uname: uname })
+    // console.log(fn('刘德华'))
+
+  </script>
+</body>
+```
+
+总结：
+
+1. 箭头函数属于表达式函数，因此不存在函数提升
+2. 箭头函数只有一个参数时可以省略圆括号 `()`
+3. 箭头函数函数体只有一行代码时可以省略花括号 `{}`，并自动做为返回值被返回
+
+#### 箭头函数参数
+
+箭头函数中没有 `arguments`，只能使用 `...` 动态获取实参
+
+~~~html
+<body>
+  <script>
+    // 1. 利用箭头函数来求和
+    const getSum = (...arr) => {
+      let sum = 0
+      for (let i = 0; i < arr.length; i++) {
+        sum += arr[i]
+      }
+      return sum
+    }
+    const result = getSum(2, 3, 4)
+    console.log(result) // 9
+  </script>
+~~~
+
+#### 箭头函数 this
+
+箭头函数不会创建自己的this,它只会从自己的作用域链的上一层沿用this
+
+~~~html
+ <script>
+    // 以前this的指向：  谁调用的这个函数，this 就指向谁
+    // console.log(this)  // window
+    // // 普通函数
+    // function fn() {
+    //   console.log(this)  // window
+    // }
+    // window.fn()
+    // // 对象方法里面的this
+    // const obj = {
+    //   name: 'andy',
+    //   sayHi: function () {
+    //     console.log(this)  // obj
+    //   }
+    // }
+    // obj.sayHi()
+
+    // 2. 箭头函数的this  是上一层作用域的this 指向
+    // const fn = () => {
+    //   console.log(this)  // window
+    // }
+    // fn()
+    // 对象方法箭头函数 this
+    // const obj = {
+    //   uname: 'pink老师',
+    //   sayHi: () => {
+    //     console.log(this)  // this 指向谁？ window
+    //   }
+    // }
+    // obj.sayHi()
+
+    const obj = {
+      uname: 'pink老师',
+      sayHi: function () {
+        console.log(this)  // obj
+        let i = 10
+        const count = () => {
+          console.log(this)  // obj 
+        }
+        count()
+      }
+    }
+    obj.sayHi()
+
+  </script>
+~~~
+
+## 解构赋值
+
+### 数组解构
+
+数组解构是将数组的单元值快速批量赋值给一系列变量的简洁语法，如下代码所示：
+
+```html
+<script>
+  // 普通的数组
+  let arr = [1, 2, 3]
+  // 批量声明变量 a b c 
+  // 同时将数组单元值 1 2 3 依次赋值给变量 a b c
+  let [a, b, c] = arr
+  console.log(a); // 1
+  console.log(b); // 2
+  console.log(c); // 3
+</script>
+```
+
+总结：
+
+1. 赋值运算符 `=` 左侧的 `[]` 用于批量声明变量，右侧数组的单元值将被赋值给左侧的变量
+2. 变量的顺序对应数组单元值的位置依次进行赋值操作
+3. 变量的数量大于单元值数量时，多余的变量将被赋值为  `undefined`
+4. 变量的数量小于单元值数量时，可以通过 `...` 获取剩余单元值，但只能置于最末位
+5. 允许初始化变量的默认值，且只有单元值为 `undefined` 时默认值才会生效
+
+注：支持多维解构赋值，比较复杂后续有应用需求时再进一步分析
+
+### 对象解构
+
+对象解构是将对象属性和方法快速批量赋值给一系列变量的简洁语法，如下代码所示：
+
+```html
+<script>
+  // 普通对象
+  const user = {
+    name: '小明',
+    age: 18
+  };
+  // 批量声明变量 name age
+  // 同时将数组单元值 小明  18 依次赋值给变量 name  age
+  const {name, age} = user
+
+  console.log(name) // 小明
+  console.log(age) // 18
+</script>
+```
+
+总结：
+
+1. 赋值运算符 `=` 左侧的 `{}` 用于批量声明变量，右侧对象的属性值将被赋值给左侧的变量
+2. 对象属性的值将被赋值给与属性名相同的变量
+3. 对象中找不到与变量名一致的属性时变量值为 `undefined`
+4. 允许初始化变量的默认值，属性不存在或单元值为 `undefined` 时默认值才会生效
+
+注：支持多维解构赋值
+
+~~~html
+<body>
+  <script>
+    // 1. 这是后台传递过来的数据
+    const msg = {
+      "code": 200,
+      "msg": "获取新闻列表成功",
+      "data": [
+        {
+          "id": 1,
+          "title": "5G商用自己，三大运用商收入下降",
+          "count": 58
+        },
+        {
+          "id": 2,
+          "title": "国际媒体头条速览",
+          "count": 56
+        },
+        {
+          "id": 3,
+          "title": "乌克兰和俄罗斯持续冲突",
+          "count": 1669
+        },
+
+      ]
+    }
+
+    // 需求1： 请将以上msg对象  采用对象解构的方式 只选出  data 方面后面使用渲染页面
+    // const { data } = msg
+    // console.log(data)
+    // 需求2： 上面msg是后台传递过来的数据，我们需要把data选出当做参数传递给 函数
+    // const { data } = msg
+    // msg 虽然很多属性，但是我们利用解构只要 data值
+    function render({ data }) {
+      // const { data } = arr
+      // 我们只要 data 数据
+      // 内部处理
+      console.log(data)
+
+    }
+    render(msg)
+
+    // 需求3， 为了防止msg里面的data名字混淆，要求渲染函数里面的数据名改为 myData
+    function render({ data: myData }) {
+      // 要求将 获取过来的 data数据 更名为 myData
+      // 内部处理
+      console.log(myData)
+
+    }
+    render(msg)
+
+  </script>
+~~~
+
+## 深入对象
+
+### 构造函数
+
+构造函数是专门用于创建对象的函数，如果一个函数使用 `new` 关键字调用，那么这个函数就是构造函数
+
+```html
+<script>
+  // 定义函数
+  function foo() {
+    console.log('通过 new 也能调用函数...');
+  }
+  // 调用函数
+  new foo;
+</script>
+```
+
+总结：
+
+1. 使用 `new` 关键字调用函数的行为被称为实例化
+
+2. 实例化构造函数时没有参数时可以省略 `()`
+3. 构造函数的返回值即为新创建的对象
+4. 构造函数内部的 `return` 返回的值无效！
+
+注：实践中为了从视觉上区分构造函数和普通函数，习惯将构造函数的首字母大写
+
+### 实例成员
+
+通过构造函数创建的对象称为实例对象，实例对象中的属性和方法称为实例成员
+
+```html
+<script>
+  // 构造函数
+  function Person() {
+    // 构造函数内部的 this 就是实例对象
+    // 实例对象中动态添加属性
+    this.name = '小明'
+    // 实例对象动态添加方法
+    this.sayHi = function () {
+      console.log('大家好~')
+    }
+  }
+  // 实例化，p1 是实例对象
+  // p1 实际就是 构造函数内部的 this
+  const p1 = new Person()
+  console.log(p1)
+  console.log(p1.name) // 访问实例属性
+  p1.sayHi() // 调用实例方法
+</script>
+```
+
+总结：
+
+1. 构造函数内部 `this` 实际上就是实例对象，为其动态添加的属性和方法即为实例成员
+2. 为构造函数传入参数，动态创建结构相同但值不同的对象
+
+注：构造函数创建的实例对象彼此独立互不影响
+
+### 静态成员
+
+在 JavaScript 中底层函数本质上也是对象类型，因此允许直接为函数动态添加属性或方法，构造函数的属性和方法被称为静态成员
+
+```html
+<script>
+  // 构造函数
+  function Person(name, age) {
+    // 省略实例成员
+  }
+  // 静态属性
+  Person.eyes = 2
+  Person.arms = 2
+  // 静态方法
+  Person.walk = function () {
+    console.log('^_^人都会走路...')
+    // this 指向 Person
+    console.log(this.eyes)
+  }
+</script>
+```
+
+总结：
+
+1. 静态成员指的是添加到构造函数本身的属性和方法
+2. 一般公共特征的属性或方法静态成员设置为静态成员
+3. 静态成员方法中的 `this` 指向构造函数本身
+
+## 内置构造函数
+
+### Object
+
+`Object` 是内置的构造函数，用于创建普通对象
+
+```html
+<script>
+  // 通过构造函数创建普通对象
+  const user = new Object({name: '小明', age: 15})
+
+  // 这种方式声明的变量称为【字面量】
+  let student = {name: '杜子腾', age: 21}
+  
+  // 对象语法简写
+  let name = '小红';
+  let people = {
+    // 相当于 name: name
+    name,
+    // 相当于 walk: function () {}
+    walk () {
+      console.log('人都要走路...');
+    }
+  }
+
+  console.log(student.constructor);
+  console.log(user.constructor);
+  console.log(student instanceof Object);
+</script>
+```
+
+总结：
+
+1. 推荐使用字面量方式声明对象，而不是 `Object` 构造函数
+2. `Object.assign` 静态方法创建新的对象
+3. `Object.keys` 静态方法获取对象中所有属性
+4. `Object.values` 表态方法获取对象中所有属性值
+
+### Array
+
+`Array` 是内置的构造函数，用于创建数组。
+
+```html
+<script>
+  // 构造函数创建数组
+  let arr = new Array(5, 7, 8);
+
+  // 字面量方式创建数组
+  let list = ['html', 'css', 'javascript']
+
+</script>
+```
+
+数组赋值后，无论修改哪个变量另一个对象的数据值也会相当发生改变。
+
+总结：
+
+1. 推荐使用字面量方式声明数组，而不是 `Array` 构造函数
+
+2. 实例方法 `forEach` 用于遍历数组，替代 `for` 循环 (重点)
+
+3. 实例方法 `filter` 过滤数组单元值，生成新数组(重点)
+
+4. 实例方法 `map` 迭代原数组，生成新数组(重点)
+
+5. 实例方法 `join` 数组元素拼接为字符串，返回字符串(重点)
+
+6. 实例方法  `find`  查找元素， 返回符合测试条件的第一个数组元素值，如果没有符合条件的则返回 undefined(重点)
+
+7. 实例方法`every` 检测数组所有元素是否都符合指定条件，如果**所有元素**都通过检测返回 true，否则返回 false(重点)
+
+8. 实例方法`some` 检测数组中的元素是否满足指定条件   **如果数组中有**元素满足条件返回 true，否则返回 false
+
+9. 实例方法 `concat`  合并两个数组，返回生成新数组
+
+10. 实例方法 `sort` 对原数组单元值排序
+
+11. 实例方法 `splice` 删除或替换原数组单元
+
+12. 实例方法 `reverse` 反转数组
+
+13. 实例方法 `findIndex`  查找元素的索引值
+
+#### forEach遍历数组
+
+forEach() 方法用于调用数组的每个元素，并将元素传递给回调函数
+
+注意：  
+
+1. forEach 主要是遍历数组
+2. 参数当前数组元素是必须要写的， 索引号可选
+
+~~~html
+<body>
+  <script>
+    // forEach 就是遍历  加强版的for循环  适合于遍历数组对象
+    const arr = ['red', 'green', 'pink']
+    const result = arr.forEach(function (item, index) {
+      console.log(item)  // 数组元素 red  green pink
+      console.log(index) // 索引号
+    })
+    // console.log(result)
+  </script>
+</body>
+~~~
+
+#### filter筛选数组
+
+filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素
+
+主要使用场景： 筛选数组符合条件的元素，并返回筛选之后元素的新数组
+
+~~~html
+<body>
+  <script>
+    const arr = [10, 20, 30]
+    // const newArr = arr.filter(function (item, index) {
+    //   // console.log(item)
+    //   // console.log(index)
+    //   return item >= 20
+    // })
+    // 返回的符合条件的新数组
+
+    const newArr = arr.filter(item => item >= 20)
+    console.log(newArr)
+  </script>
+</body>
+~~~
+
+#### 数组map方法
+
+**使用场景：**
+
+map 可以遍历数组处理数据，并且返回新的数组
+
+**语法：**
+
+~~~javascript
+<body>
+  <script>
+  const arr = ['red', 'blue', 'pink']
+  // 1. 数组 map方法 处理数据并且 返回一个数组
+   const newArr = arr.map(function (ele, index) {
+    // console.log(ele)  // 数组元素
+    // console.log(index) // 索引号
+    return ele + '颜色'
+	})
+console.log(newArr)
+</script>
+</body>
+~~~
+
+map重点在于有返回值，forEach没有返回值（undefined）
+
+#### 数组join方法
+
+**作用：**join() 方法用于把数组中的所有元素转换一个字符串
+
+**语法：**
+
+~~~html
+<body>
+  <script>
+    const arr = ['red', 'blue', 'pink']
+
+    // 1. 数组 map方法 处理数据并且 返回一个数组
+    const newArr = arr.map(function (ele, index) {
+      // console.log(ele)  // 数组元素
+      // console.log(index) // 索引号
+      return ele + '颜色'
+    })
+    console.log(newArr)
+
+    // 2. 数组join方法  把数组转换为字符串
+    // 小括号为空则逗号分割
+    console.log(newArr.join())  // red颜色,blue颜色,pink颜色
+    // 小括号是空字符串，则元素之间没有分隔符
+    console.log(newArr.join(''))  //red颜色blue颜色pink颜色
+    console.log(newArr.join('|'))  //red颜色|blue颜色|pink颜色
+  </script>
+</body>
+~~~
+
+#### reduce方法
+
+- 作用：reduce 返回函数累计处理的结果，经常用于求和等
+- 语法：`arr.reduce(function(累计值, 当前元素 [,索引值][,源数组]){}, 起始值)`
+- 累计值参数：
+  1. 如果有起始值，则以起始值为准开始累计， 累计值 = 起始值
+  2. 如果没有起始值，则累计值以数组的第一个数组元素作为起始值开始累计
+  3. 后面每次遍历就会用后面的数组元素累计到累计值里面（类似求和里面的 sum ）
+
+- reduce执行过程：
+  1. 如果没有起始值，则上一次值以数组的第一个数组元素的值
+  2. 每一次循环，把返回值给作为下一次循环的上一次值
+  3. 如果有起始值，则起始值做为上一次值
+
+### 包装类型
+
+#### String
+
+`String` 是内置的构造函数，用于创建字符串
+
+```html
+<script>
+  // 使用构造函数创建字符串
+  let str = new String('hello world!');
+
+  // 字面量创建字符串
+  let str2 = '你好，世界！';
+
+  // 检测是否属于同一个构造函数
+  console.log(str.constructor === str2.constructor); // true
+  console.log(str instanceof String); // false
+</script>
+```
+
+总结：
+
+1. 实例属性 `length` 用来获取字符串的度长(重点)
+2. 实例方法 `split('分隔符')` 用来将字符串拆分成数组(重点)
+3. 实例方法 `substring（需要截取的第一个字符的索引[,结束的索引号]）` 用于字符串截取(重点)
+4. 实例方法 `startsWith(检测字符串[, 检测位置索引号])` 检测是否以某字符开头(重点)
+5. 实例方法 `includes(搜索的字符串[, 检测位置索引号])` 判断一个字符串是否包含在另一个字符串中，根据情况返回 true 或 false(重点)
+6. 实例方法 `toUpperCase` 用于将字母转换成大写
+7. 实例方法 `toLowerCase` 用于将就转换成小写
+8. 实例方法 `indexOf`  检测是否包含某字符
+9. 实例方法 `endsWith` 检测是否以某字符结尾
+10. 实例方法 `replace` 用于替换字符串，支持正则匹配
+11. 实例方法 `match` 用于查找字符串，支持正则匹配
+
+注：String 也可以当做普通函数使用，这时它的作用是强制转换成字符串数据类型
+
+#### Number
+
+`Number` 是内置的构造函数，用于创建数值
+
+```html
+<script>
+  // 使用构造函数创建数值
+  let x = new Number('10')
+  let y = new Number(5)
+
+  // 字面量创建数值
+  let z = 20
+
+</script>
+```
+
+总结：
+
+1. 推荐使用字面量方式声明数值，而不是 `Number` 构造函数
+2. 实例方法 `toFixed` 用于设置保留小数位的长度
+
+## 原型对象
+
+构造函数通过原型分配的函数是所有对象所共享的
+
+- JavaScript 规定，每一个构造函数都有一个 prototype 属性，指向另一个对象，所以我们也称为原型对象
+- 这个对象可以挂载函数，对象实例化不会多次创建原型上函数，节约内存
+- 我们可以把那些不变的方法，直接定义在 prototype 对象上，这样所有对象的实例就可以共享这些方法
+- 构造函数和原型对象中的this 都指向 实例化的对象
+- 当访问对象的属性或方法时，先在当前实例对象是查找，然后再去原型对象查找，并且原型对象被所有实例共享
+
+```html
+<script>
+  function Person() {
+    // 此处未定义任何方法
+  }
+
+  // 为构造函数的原型对象添加方法
+  Person.prototype.sayHi = function () {
+    console.log('Hi~');
+  }
+	
+  // 实例化
+  let p1 = new Person();
+  p1.sayHi(); // 输出结果为 Hi~
+</script>
+```
+
+### constructor 属性
+
+
+每个原型对象里面都有个constructor 属性（constructor 构造函数）
+
+作用：该属性指向该原型对象的构造函数
+
+**使用场景：**
+
+如果有多个对象的方法，我们可以给原型对象采取对象形式赋值
+
+但是这样就会覆盖构造函数原型对象原来的内容，这样修改后的原型对象 constructor 就不再指向当前构造函数了
+
+此时，我们可以在修改后的原型对象中，添加一个 constructor 指向原来的构造函数
+
+### 对象原型
+
+
+对象都会有一个属性`__proto__`指向构造函数的 prototype 原型对象，之所以我们对象可以使用构造函数 prototype 原型对象的属性和方法，就是因为对象有`__proto__`原型的存在
+
+注意：
+
+- `__proto__`是JS非标准属性
+- `[[prototype]]`和`__proto__`意义相同
+- 用来表明当前实例对象指向哪个原型对象prototype
+- `__proto__`对象原型里面也有一个 constructor属性，指向创建该实例对象的构造函数
+
+ <img src="https://image.cgz233.cn/images/202304251702037.png" alt="image-20230425170218643" style="zoom:33%;" />
+
+
+
+### 原型继承
+
+继承是面向对象编程的另一个特征，通过继承进一步提升代码封装的程度，JavaScript 中大多是借助原型对象实现继承的特性
+
+```html
+<body>
+  <script>
+    // 继续抽取   公共的部分放到原型上
+    // const Person1 = {
+    //   eyes: 2,
+    //   head: 1
+    // }
+    // const Person2 = {
+    //   eyes: 2,
+    //   head: 1
+    // }
+    // 构造函数  new 出来的对象 结构一样，但是对象不一样
+    function Person() {
+      this.eyes = 2
+      this.head = 1
+    }
+    // console.log(new Person)
+    // 女人  构造函数   继承  想要 继承 Person
+    function Woman() {
+
+    }
+    // Woman 通过原型来继承 Person
+    // 父构造函数（父类）   子构造函数（子类）
+    // 子类的原型 =  new 父类  
+    Woman.prototype = new Person()   // {eyes: 2, head: 1} 
+    // 指回原来的构造函数
+    Woman.prototype.constructor = Woman
+
+    // 给女人添加一个方法  生孩子
+    Woman.prototype.baby = function () {
+      console.log('宝贝')
+    }
+    const red = new Woman()
+    console.log(red)
+    // console.log(Woman.prototype)
+    // 男人 构造函数  继承  想要 继承 Person
+    function Man() {
+
+    }
+    // 通过 原型继承 Person
+    Man.prototype = new Person()
+    Man.prototype.constructor = Man
+    const pink = new Man()
+    console.log(pink)
+  </script>
+</body>
+```
+
+### 原型链
+
+基于原型对象的继承使得不同构造函数的原型对象关联在一起，并且这种关联的关系是一种链状的结构，我们将原型对象的链状结构关系称为原型链
+
+<img src="https://image.cgz233.cn/images/202304251912784.png" alt="image-20230425191239200" style="zoom:80%;" /> 
+
+原型链-查找规则
+
+1. 当访问一个对象的属性（包括方法）时，首先查找这个对象自身有没有该属性
+2. 如果没有就查找它的原型（也就是`__proto__`指向的 prototype 原型对象）
+3. 如果还没有就查找原型对象的原型（Object的原型对象）
+4. 依此类推一直找到 Object 为止（null）
+5. `__proto__`对象原型的意义就在于为对象成员查找机制提供一个方向，或者说一条路线
+6. 可以使用 instanceof 运算符用于检测构造函数的 prototype 属性是否出现在某个实例对象的原型链上
+
+## 处理this
+
+### 普通函数
+
+**普通函数**的调用方式决定了 `this` 的值，即【谁调用 `this` 的值指向谁】，如下代码所示：
+
+```html
+<script>
+  // 普通函数
+  function sayHi() {
+    console.log(this)  
+  }
+  // 函数表达式
+  const sayHello = function () {
+    console.log(this)
+  }
+  // 函数的调用方式决定了 this 的值
+  sayHi() // window
+  window.sayHi()
+	
+
+// 普通对象
+  const user = {
+    name: '小明',
+    walk: function () {
+      console.log(this)
+    }
+  }
+  // 动态为 user 添加方法
+  user.sayHi = sayHi
+  uesr.sayHello = sayHello
+  // 函数调用方式，决定了 this 的值
+  user.sayHi()
+  user.sayHello()
+</script>
+```
+
+注： 普通函数没有明确调用者时 `this` 值为 `window`，严格模式下没有调用者时 `this` 的值为 `undefined`
+
+### 箭头函数
+
+**箭头函数**中的 `this` 与普通函数完全不同，也不受调用方式的影响，事实上箭头函数中并不存在 `this` ！箭头函数中访问的 `this` 不过是箭头函数所在作用域的 `this` 变量
+
+```html
+<script>
+    
+  console.log(this) // 此处为 window
+  // 箭头函数
+  const sayHi = function() {
+    console.log(this) // 该箭头函数中的 this 为函数声明环境中 this 一致
+  }
+  // 普通对象
+  const user = {
+    name: '小明',
+    // 该箭头函数中的 this 为函数声明环境中 this 一致
+    walk: () => {
+      console.log(this)
+    },
+    
+    sleep: function () {
+      let str = 'hello'
+      console.log(this)
+      let fn = () => {
+        console.log(str)
+        console.log(this) // 该箭头函数中的 this 与 sleep 中的 this 一致
+      }
+      // 调用箭头函数
+      fn();
+    }
+  }
+
+  // 动态添加方法
+  user.sayHi = sayHi
+  
+  // 函数调用
+  user.sayHi()
+  user.sleep()
+  user.walk()
+</script>
+```
+
+在开发中【使用箭头函数前需要考虑函数中 `this` 的值】，**事件回调函数**使用箭头函数时，`this` 为全局的 `window`，因此DOM事件回调函数不推荐使用箭头函数，如下代码所示：
+
+```html
+<script>
+  // DOM 节点
+  const btn = document.querySelector('.btn')
+  // 箭头函数 此时 this 指向了 window
+  btn.addEventListener('click', () => {
+    console.log(this)
+  })
+  // 普通函数 此时 this 指向了 DOM 对象
+  btn.addEventListener('click', function () {
+    console.log(this)
+  })
+</script>
+```
+
+同样由于箭头函数 `this` 的原因，**基于原型的面向对象也不推荐采用箭头函数**，如下代码所示：
+
+```html
+<script>
+  function Person() {
+  }
+  // 原型对像上添加了箭头函数
+  Person.prototype.walk = () => {
+    console.log('人都要走路...')
+    console.log(this); // window
+  }
+  const p1 = new Person()
+  p1.walk()
+</script>
+```
+
+### 改变this指向
+
+以上归纳了普通函数和箭头函数中关于 `this` 默认值的情形，不仅如此 JavaScript 中还允许指定函数中 `this` 的指向，有 3 个方法可以动态指定普通函数中 `this` 的指向：
+
+#### call
+
+使用 `call` 方法调用函数，同时指定函数中 `this` 的值，使用方法如下代码所示：
+
+```html
+<script>
+  // 普通函数
+  function sayHi() {
+    console.log(this);
+  }
+
+  let user = {
+    name: '小明',
+    age: 18
+  }
+
+  let student = {
+    name: '小红',
+    age: 16
+  }
+
+  // 调用函数并指定 this 的值
+  sayHi.call(user); // this 值为 user
+  sayHi.call(student); // this 值为 student
+
+  // 求和函数
+  function counter(x, y) {
+    return x + y;
+  }
+
+  // 调用 counter 函数，并传入参数
+  let result = counter.call(null, 5, 10);
+  console.log(result);
+</script>
+```
+
+总结：
+
+1. `call` 方法能够在调用函数的同时指定 `this` 的值
+2. 使用 `call` 方法调用函数时，第1个参数为 `this` 指定的值
+3. `call` 方法的其余参数会依次自动传入函数做为函数的参数
+
+#### apply
+
+使用 `call` 方法**调用函数**，同时指定函数中 `this` 的值，使用方法如下代码所示：
+
+```html
+<script>
+  // 普通函数
+  function sayHi() {
+    console.log(this)
+  }
+
+  let user = {
+    name: '小明',
+    age: 18
+  }
+
+  let student = {
+    name: '小红',
+    age: 16
+  }
+
+  // 调用函数并指定 this 的值
+  sayHi.apply(user) // this 值为 user
+  sayHi.apply(student) // this 值为 student
+
+  // 求和函数
+  function counter(x, y) {
+    return x + y
+  }
+  // 调用 counter 函数，并传入参数
+  let result = counter.apply(null, [5, 10])
+  console.log(result)
+</script>
+```
+
+总结：
+
+1. `apply` 方法能够在调用函数的同时指定 `this` 的值
+2. 使用 `apply` 方法调用函数时，第1个参数为 `this` 指定的值
+3. `apply` 方法第2个参数为数组，数组的单元值依次自动传入函数做为函数的参数
+
+#### bind
+
+`bind` 方法并**不会调用函数**，而是创建一个指定了 `this` 值的新函数，使用方法如下代码所示：
+
+```html
+<script>
+  // 普通函数
+  function sayHi() {
+    console.log(this)
+  }
+  let user = {
+    name: '小明',
+    age: 18
+  }
+  // 调用 bind 指定 this 的值
+  let sayHello = sayHi.bind(user);
+  // 调用使用 bind 创建的新函数
+  sayHello()
+</script>
+```
+
+注：`bind` 方法创建新的函数，与原函数的唯一的变化是改变了 `this` 的值

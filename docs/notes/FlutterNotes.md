@@ -81,7 +81,7 @@ class MyButton extends StatelessWidget {
 |maxLines| 文字显示最大行数|
 |style| 字体的样式设置
 
-TextStyle参数
+TextStyle参数：
 
 |名称| 功能|
 |--|--|
@@ -125,6 +125,16 @@ class MyText extends StatelessWidget {
 ### Image
 
 - Image.asset 本地图片
+
+  导入本地图片需要现在pubspec.yaml文件中配置
+
+  ```yaml
+      assets:
+      - images/2.0x/a.jpg
+      - images/3.0x/a.jpg
+      - images/a.jpg
+  ```
+
 - Image.network 网络图片
 |名称| 类型| 说明|
 |--|--|--|
@@ -205,6 +215,196 @@ class LocalImage extends StatelessWidget {
         'images/a.jpg',
       ),
     );
+  }
+}
+```
+
+### Icon
+
+自定义图标
+
+首先在pubspec.yaml文件中配置字体文件位置
+
+```yaml
+  fonts:
+   - family: MyIcon
+     fonts:
+       - asset: fonts/iconfont.ttf
+```
+
+定义一个图标类，IconData第一个参数传入的是字体的unicode十六进制编码
+
+```dart
+import 'package:flutter/material.dart';
+
+class MyIcon {
+  static const IconData java =
+      IconData(0xf1d7, fontFamily: 'MyIcon', matchTextDirection: true);
+
+  static const IconData kotlin =
+      IconData(0xebed, fontFamily: 'MyIcon', matchTextDirection: true);
+
+  static const IconData flutter =
+      IconData(0xe7e0, fontFamily: 'MyIcon', matchTextDirection: true);
+}
+```
+
+```dart
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: const [
+        Icon(
+          Icons.search, // 官方图标
+          size: 80,
+          color: Colors.blue,
+        ),
+        Icon(
+          MyIcon.java, // 自定义图标
+          size: 80,
+          color: Colors.blue,
+        ),
+        Icon(
+          MyIcon.kotlin, // 自定义图标
+          size: 80,
+          color: Colors.blue,
+        ),
+        Icon(
+          MyIcon.flutter, // 自定义图标
+          size: 80,
+          color: Colors.blue,
+        )
+      ],
+    );
+  }
+}
+```
+
+### ListView
+
+|名称 |类型 |说明|
+|--|--|--|
+|scrollDirection |Axis |Axis.horizontal水平列表<br/>Axis.vertical垂直列表|
+|padding| EdgeInsetsGeometry |内边距|
+|resolve |bool |组件反向排序|
+|children |List| 列表元素|
+
+```dart
+// 创建ListView 使用ListView.builder
+class NewsList2 extends StatelessWidget {
+  const NewsList2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: newsListData.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+              leading: Image.network(
+                'http://192.168.1.211:10001${newsListData[index]['cover']}',
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+              title: Text(
+                newsListData[index]['title'],
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    newsListData[index]['content'],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    "发布时间：${newsListData[index]['publishDate']}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    "评论数量：${newsListData[index]['commentNum']}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ));
+        });
+  }
+}
+
+// 创建ListView 遍历数组
+class NewsList extends StatelessWidget {
+  const NewsList({super.key});
+
+  List<Widget> _initData() {
+    List<Widget> list = [];
+
+    for (var news in newsListData) {
+      list.add(
+        ListTile(
+          visualDensity: const VisualDensity(vertical: 4),
+          leading: Image.network(
+            'http://192.168.1.211:10001${news['cover']}',
+            fit: BoxFit.cover,
+            width: 100,
+            height: 100,
+          ),
+          title:
+              Text(news['title'], maxLines: 1, overflow: TextOverflow.ellipsis),
+          subtitle: Text(news['content'],
+              maxLines: 2, overflow: TextOverflow.ellipsis),
+          trailing: const Icon(
+            Icons.chevron_right,
+            size: 30,
+          ),
+        ),
+      );
+    }
+
+    return list;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: _initData(),
+    );
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  List<Widget> _initListData() {
+    List<Widget> list = [];
+    for (var i = 0; i < 20; i++) {
+      list.add(ListTile(
+        leading: Image.network('https://image.cgz233.cn/test.jpg',
+            width: 60, fit: BoxFit.cover),
+        title: const Text('宠物猫即将迎来32岁 主人欲申请吉尼斯世界纪录',
+            maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: const Text(
+            '据英国《都市报》4月6日报道，近日，来自英国的Lila Brissett正在为自己的宠物猫Rosie筹备32岁的生日庆典。Rosie的年龄相当于人类144岁，Lila觉得它可能是世界上最长寿的猫，打算为它申请吉尼斯世界纪录。 ',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis),
+      ));
+    }
+
+    return list;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+        scrollDirection: Axis.vertical,
+        padding: const EdgeInsets.all(10),
+        children: _initListData());
   }
 }
 ```

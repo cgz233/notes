@@ -4,6 +4,7 @@
 - [Python Notes](notes/PythonNotes.md)
 - [Android Notes](notes/AndroidNotes.md)
 - [Kotlin Notes](notes/KotlinNotes.md)
+- [Flutter Notes](notes\FlutterNotes.md)
 - [HTML Notes](notes/HTML随手记.md)
 - [CSS Notes](notes/CSSNotes.md)
 - [JavaScript Notes](notes/JavaScriptNotes.md)

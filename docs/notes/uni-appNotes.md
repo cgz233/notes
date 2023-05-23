@@ -249,6 +249,35 @@ https://uniapp.dcloud.net.cn/api/window/communication.html
   });
   ```
 
+- 上传文件
+
+  ```javascript
+  uni.chooseImage({
+      count: 1,
+      success: (res) => {
+          uni.uploadFile({
+              url: apiUtil.mainUrl + '/prod-api/common/upload',
+              filePath: res.tempFilePaths[0],
+              name: 'file',
+              header: {
+                  'Authorization': uni.getStorageSync('token')
+              },
+              success: (res) => {
+                  let data = JSON.parse(res.data)
+                  this.$put(apiUtil.modifyInfo, {
+                      avatar: data.fileName
+                  }).then((res) => {
+                      this.$toast(res.msg)
+                      if(res.code == 200){
+                          this.avatar = apiUtil.mainUrl + '/prod-api' + data.fileName
+                      }
+                  })
+              }
+          })
+      }
+  })
+  ```
+
 ## 条件编译
 
 写法：以 #ifdef 或 #ifndef 加 %PLATFORM% 开头，以 #endif 结尾

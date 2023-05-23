@@ -3,24 +3,11 @@
 > by.XiaoChen
 >
 > 此仓库记录我的学习笔记
+>
+> 笔记为学习时整理，部分资源来源于网络，侵权联系admin@cgz233.cn
 
 - [我的个人网站](https://www.cgz233.cn)
-
 - [GithubPages笔记页](https://www.xiaochen.live)
-
-- [JavaNotes上部分](docs/notes/JavaNotes上部分.md)
-
-- [JavaNotes中部分](docs/notes/JavaNotes中部分.md)
-
-- [JavaNotes下部分](docs/notes/JavaNotes下部分.md)
-
-- [Android开发笔记](docs/notes/AndroidNotes.md)
-
-- [KotlinNotes](docs/notes/KotlinNotes.md)
-
-- [MySQLNotes](docs/notes/MySQLNotes.md)
-
-- [GitNotes](docs/notes/GitNotes.md)
 
 ![](https://image.cgz233.cn/images/gzh.bmp)
 

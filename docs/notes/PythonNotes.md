@@ -483,3 +483,175 @@ except[异常 as 别名]:
 	不管出不出现都会做的事情
 ```
 
+## 模块
+
+### 模块的导入方式
+
+- 模块在使用前需要先导入 导入的语法如下：
+
+  ```python
+  [from 模块名] import [模块 | 类 | 变量 | 函数 | *] [as 别名]
+  ```
+
+- 常用的组合形式如：
+
+  - `import 模块名`
+
+    ```python
+    import 模块名
+    import 模块名1，模块名2
+    
+    模块名.功能名()
+    ```
+
+  - `from 模块名 import 类、变量、方法等`
+
+    ```python
+    from 模块名 import 功能名
+    
+    功能名()
+    ```
+
+  - `from 模块名 import *`
+
+    ```python
+    from 模块名 import *
+    
+    功能名()
+    ```
+
+  - `import 模块名 as 别名`
+
+    ```python
+    # 模块定义别名
+    import 模块名 as 别名
+    
+    # 功能定义别名
+    from 模块名 import 功能 as 别名
+    ```
+
+  - `from 模块名`
+
+  - `import 功能名 as 别名`
+
+### 自定义模块
+
+- 自定义模块并导入
+
+  在Python代码文件中正常写代码即可，通过import、from关键字和导入Python内置模块一样导入即可使用
+
+- `__main__`变量
+
+  `if __name__ == “__main__”`表示，只有当程序是直接执行的才会进入if内部，如果是被导入的，则if无法进入
+
+- `__all__`变量
+
+  如果一个模块文件中有`__all__`变量，当使用`from xxx import *`导入时，只能导入这个列表中的元素
+
+  ```python
+  __all__ = ['test_A']
+  def test_A():
+      print('testA')
+  def testB():
+      print('testB')
+      
+  # 另一个文件中
+  from my_module import * # 只会导入test_A函数
+  ```
+
+## 包
+
+### 定义包
+
+- 从物理上看，包就是一个文件夹，在该文件夹下包含了一个 `__init__.py` 文件，该文件夹可用于包含多个模块文件从逻辑上看，包的本质依然是模块
+- 包的作用:当我们的模块文件越来越多时,包可以帮助我们管理这些模块, 包的作用就是包含多个模块，但包的本质依然是模块
+
+### 导入包
+
+- ```python
+  import 包名.模块名
+  
+  包名.模块名.目标
+  ```
+
+- ```python
+  # 注意：必须在__init__.py文件中添加__all__ = []，控制允许导入的模块列表
+  from 包名 import *
+  模块名.目标
+  ```
+  
+
+### 安装第三方包
+
+- cmd输入`pip install 包名称`
+- 使用国内镜像`pip install -i https://pypi.tuna.tsinghua.edu.cn/simple 包名称`
+
+## 面向对象
+
+```python
+class Person:
+    name = None
+    sex = None
+    __hobby = None  # 私有属性，无法直接调用
+
+    def __init__(self, name, age, hobby):
+        self.name = name
+        self.age = age
+        self.__hobby = hobby
+
+    def eat(self, food_name):
+        print(f"{self.name}正在吃{food_name}")
+
+    def __do_hobby(self):  # 私有方法，无法直接调用
+        print(f"{self.name}正在{self.__hobby}")
+
+    def public_do_hobby(self):
+        self.__do_hobby()
+
+
+person = Person("Jack", 18, "打篮球")
+person.sex = "男"
+person.__hobby = "打乒乓球"  # 私有成员，无法赋值
+person.eat("火锅")
+# person.do_hobby() # 报错
+person.public_do_hobby()
+
+
+class Student(Person):  # 继承
+    def __init__(self, name, age, hobby, score: float):
+        super().__init__(name, age, hobby)
+        self.score = score
+
+    def study(self):
+        print(f"{self.name}正在学习，考了{self.score}分")
+
+
+student: Student = Student("小明", 19, "学习", 100)  # 类型注解
+student.study()
+
+num: int = 10  # 类型注解
+name = "Jack"  # type: str
+my_list: list[int] = [1, 2, 3]
+my_dict: dict[str, int] = {"age": 11, "num": 3}
+
+
+def func(data: list) -> list:  # 方法类型注解
+    return data
+
+
+# Union
+from typing import Union
+
+my_list: list[Union[str, int]] = [1, 2, "jack", "小明"]
+my_dict: dict[str, Union[str, int]] = {"name": "Jack", "age": 33}
+
+```
+
+| 方法       | 功能                                           | 解释                               |
+| ---------- | ---------------------------------------------- | ---------------------------------- |
+| `__init__` | 构造方法，可用于创建类对象的时候设置初始化行为 | 类似于Java的构造方法               |
+| `__str__`  | 用于实现类对象转字符串的行为                   | 类似于Java重写toString()           |
+| `__lt__`   | 用于2个类对象进行小于或大于比较                |                                    |
+| `__le__`   | 用于2个类对象进行小于等于或大于等于比较        |                                    |
+| `__eq__`   | 用于2个类对象进行相等比较                      | 类似于Java重写equals()和hashCode() |
+

@@ -1972,8 +1972,8 @@ module.exports = {
 1. 被用来给元素或子组件注册引用信息（id的替代者）
 2. 应用在html标签上获取的是真实DOM元素，应用在组件标签上是组件实例对象（vc）
 3. 使用方式：
-   1. 打标识：```<h1 ref="xxx">.....</h1>``` 或 ```<School ref="xxx"></School>```
-   2. 获取：```this.$refs.xxx```
+   1. 打标识：`<h1 ref="xxx">.....</h1>` 或 `<School ref="xxx"></School>`
+   2. 获取：`this.$refs.xxx`
 
 ```vue
 <template>
@@ -2052,8 +2052,8 @@ module.exports = {
 
    第二步使用混入：
 
-   全局混入：```Vue.mixin(xxx)```
-   局部混入：```mixins:['xxx']	```
+   全局混入：`Vue.mixin(xxx)`
+   局部混入：`mixins:['xxx']`
 
 ## 插件
 
@@ -2113,7 +2113,7 @@ module.exports = {
       }
       ```
 
-   3. 若想让自定义事件只能触发一次，可以使用```once```修饰符，或```$once```方法。
+   3. 若想让自定义事件只能触发一次，可以使用`once`修饰符，或`$once`方法。
 
 4. 触发自定义事件：`this.$emit('chen',数据)`
 
@@ -2220,39 +2220,39 @@ module.exports = {
 
       ```vue
       父组件中：
-              <Category>
-                 <div>html结构1</div>
-              </Category>
+          <Category>
+             <div>html结构1</div>
+          </Category>
       子组件中：
-              <template>
-                  <div>
-                     <!-- 定义插槽 -->
-                     <slot>插槽默认内容...</slot>
-                  </div>
-              </template>
+          <template>
+              <div>
+                 <!-- 定义插槽 -->
+                 <slot>插槽默认内容...</slot>
+              </div>
+          </template>
       ```
 
    2. 具名插槽：
 
       ```vue
       父组件中：
-              <Category>
-                  <template slot="center">
-                    <div>html结构1</div>
-                  </template>
-      
-                  <template v-slot:footer>
-                     <div>html结构2</div>
-                  </template>
-              </Category>
-      子组件中：
-              <template>
-                  <div>
-                     <!-- 定义插槽 -->
-                     <slot name="center">插槽默认内容...</slot>
-                     <slot name="footer">插槽默认内容...</slot>
-                  </div>
+          <Category>
+              <template slot="center">
+                <div>html结构1</div>
               </template>
+      
+              <template v-slot:footer>
+                 <div>html结构2</div>
+              </template>
+          </Category>
+      子组件中：
+          <template>
+              <div>
+                 <!-- 定义插槽 -->
+                 <slot name="center">插槽默认内容...</slot>
+                 <slot name="footer">插槽默认内容...</slot>
+              </div>
+          </template>
       ```
 
    3. 作用域插槽：
@@ -2263,40 +2263,40 @@ module.exports = {
 
          ```vue
          父组件中：
-         		<Category>
-         			<template scope="scopeData">
-         				<!-- 生成的是ul列表 -->
-         				<ul>
-         					<li v-for="g in scopeData.games" :key="g">{{g}}</li>
-         				</ul>
-         			</template>
-         		</Category>
-         
-         		<Category>
-         			<template slot-scope="scopeData">
-         				<!-- 生成的是h4标题 -->
-         				<h4 v-for="g in scopeData.games" :key="g">{{g}}</h4>
-         			</template>
-         		</Category>
-         子组件中：
-                 <template>
-                     <div>
-                         <slot :games="games"></slot>
-                     </div>
+             <Category>
+                 <template scope="scopeData">
+                     <!-- 生成的是ul列表 -->
+                     <ul>
+                         <li v-for="g in scopeData.games" :key="g">{{g}}</li>
+                     </ul>
                  </template>
-         		
-                 <script>
-                     export default {
-                         name:'Category',
-                         props:['title'],
-                         //数据在子组件自身
-                         data() {
-                             return {
-                                 games:['红色警戒','穿越火线','劲舞团','超级玛丽']
-                             }
-                         },
-                     }
-                 </script>
+             </Category>
+         
+             <Category>
+                 <template slot-scope="scopeData">
+                     <!-- 生成的是h4标题 -->
+                     <h4 v-for="g in scopeData.games" :key="g">{{g}}</h4>
+                 </template>
+             </Category>
+         子组件中：
+             <template>
+                 <div>
+                     <slot :games="games"></slot>
+                 </div>
+             </template>
+         
+             <script>
+                 export default {
+                     name:'Category',
+                     props:['title'],
+                     //数据在子组件自身
+                     data() {
+                         return {
+                             games:['红色警戒','穿越火线','劲舞团','超级玛丽']
+                         }
+                     },
+                 }
+             </script>
          ```
 
 

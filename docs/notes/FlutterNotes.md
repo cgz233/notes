@@ -230,7 +230,7 @@ const CircleAvatar(
 )
 ```
 
-ClipRRect裁切圆角
+ClipRRect裁切圆角：
 
 ```dart
 ClipRRect(

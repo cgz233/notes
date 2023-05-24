@@ -808,7 +808,7 @@ final height = size.height;
 |shadowColor |阴影颜色|
 |margin |外边距|
 |clipBehavior | clipBehavior 内容溢出的剪切方式<br/>Clip.none：不剪切<br/>Clip.hardEdge：裁剪但不应用抗锯齿<br/>Clip.antiAlias：裁剪而且抗锯齿<br/>Clip.antiAliasWithSaveLayer：带有抗锯齿的剪辑，并在剪辑之后立即保存saveLayer |
-|Shape |Card的阴影效果，默认的阴影效果为圆角的长方形边<br/>`shape: const RoundedRectangleBorder(borderRadius:BorderRadius.all(Radius.circular(10)))`|
+|shape |Card的阴影效果，默认的阴影效果为圆角的长方形边<br/>`shape: const RoundedRectangleBorder(borderRadius:BorderRadius.all(Radius.circular(10)))`|
 
 
 

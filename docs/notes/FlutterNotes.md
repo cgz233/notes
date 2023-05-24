@@ -145,6 +145,7 @@ class MyText extends StatelessWidget {
 |width| |宽度 一般结合ClipOval才能看到效果|
 |height| |高度 一般结合ClipOval才能看到效果|
 
+
 ```dart
 // 加载网络图片
 class MyApp extends StatelessWidget {
@@ -165,7 +166,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// 圆形裁剪图片 第一中方法，设置Container圆角
+// 圆形裁剪图片 第一种方法，设置Container圆角
 class CircularImage extends StatelessWidget {
   const CircularImage({super.key});
 
@@ -217,6 +218,30 @@ class LocalImage extends StatelessWidget {
     );
   }
 }
+```
+
+CircleAvatar实现圆形图片：
+
+```dart
+const CircleAvatar(
+    radius: 50, // 圆的半径大小
+    backgroundImage:
+    NetworkImage("https://image.cgz233.cn/test.jpg")
+)
+```
+
+ClipRRect裁切圆角
+
+```dart
+ClipRRect(
+  borderRadius:
+      const BorderRadius.vertical(top: Radius.circular(10)), // 裁切顶部两角
+  child: Image.network(
+    'https://image.cgz233.cn/test.jpg',
+    height: 135,
+    fit: BoxFit.cover
+  )
+)
 ```
 
 ### Icon
@@ -683,4 +708,158 @@ class MyApp extends StatelessWidget {
     );
   }
 ```
+
+### Stack&Align&Positioned
+
+#### Stack
+
+Stack表示堆的意思（类似Android FrameLayout），可以用Stack或者Stack结合Align或者Stack结合Positiond来实现页面的定位布局
+
+|属性| 说明|
+|--|--|
+|alignment| 配置所有子元素的显示位置|
+|children| 子组件|
+
+#### Align
+
+Align组件可以调整子组件的位置，Stack组件中结合Align组件也可以控制每个子元素的显示位置
+
+|属性| 说明|
+|--|--|
+|alignment |配置所有子元素的显示位置|
+|child| 子组件|
+
+#### Positioned
+
+Stack组件中结合Positioned组件也可以控制每个子元素的显示位置
+
+|属性 |说明|
+|--|--|
+|top |子元素距离顶部的距离|
+|bottom| 子元素距离底部的距离|
+|left| 子元素距离左侧距离|
+|right| 子元素距离右侧距离|
+|child| 子组件|
+|width |组件的高度（注意：宽度和高度必须是固定值，没法使用double.infinity）|
+|height |子组件的高度|
+
+获取屏幕宽度和高度
+
+```dart
+final size = MediaQuery.of(context).size;
+final width = size.width;
+final height = size.height;
+```
+
+综合案例
+
+```dart
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return Stack(
+      alignment: Alignment.topLeft,
+      children: [
+        ListView(
+          padding: const EdgeInsets.only(top: 50),
+          children: const [
+            ListTile(
+              title: Text('Test1'),
+            ),
+            ListTile(
+              title: Text('Test2'),
+            ),
+          ],
+        ),
+        Positioned(
+            top: 0,
+            left: 0,
+            width: size.width,
+            height: 50,
+            child: Container(
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(color: Colors.green),
+              child: const Text('Hello'),
+            ))
+      ],
+    );
+  }
+```
+
+### AspectRatio
+
+- AspectRatio的作用是根据设置调整子元素child的宽高比
+- AspectRatio首先会在布局限制条件允许的范围内尽可能的扩展，widget的高度是由宽度和比率决定的，类似于BoxFit中的contain，按照固定比率去尽量占满区域
+- 如果在满足所有限制条件过后无法找到一个可行的尺寸，AspectRatio最终将会去优先适应布局限制条件，而忽略所设置的比率
+
+|属性 |说明|
+|--|--|
+|aspectRatio| 宽高比，最终可能不会根据这个值去布局，具体则要看综合因素，外层是否允许按照这种比率进行布局，这只是一个参考值|
+|child| 子组件|
+
+### Card
+
+|属性 |说明|
+|--|--|
+|margin |外边距|
+|child| 子组件|
+|elevation |阴影值的深度|
+|color |背景颜色|
+|shadowColor |阴影颜色|
+|margin |外边距|
+|clipBehavior | clipBehavior 内容溢出的剪切方式<br/>Clip.none：不剪切<br/>Clip.hardEdge：裁剪但不应用抗锯齿<br/>Clip.antiAlias：裁剪而且抗锯齿<br/>Clip.antiAliasWithSaveLayer：带有抗锯齿的剪辑，并在剪辑之后立即保存saveLayer |
+|Shape |Card的阴影效果，默认的阴影效果为圆角的长方形边<br/>`shape: const RoundedRectangleBorder(borderRadius:BorderRadius.all(Radius.circular(10)))`|
+
+
+
+```dart
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        Card(
+          margin: const EdgeInsets.all(10),
+          elevation: 10,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Image.network(
+                    'https://image.cgz233.cn/bac.jpg',
+                    fit: BoxFit.cover,
+                  )),
+              ListTile(
+                  leading: const CircleAvatar(
+                      radius: 28,
+                      backgroundImage:
+                          NetworkImage('https://image.cgz233.cn/xin.jpg')),
+                  title: const Text('XiaoChen'),
+                  subtitle: Row(
+                    children: const [
+                      Icon(
+                        Icons.email,
+                        size: 20,
+                      ),
+                      Padding(padding: EdgeInsets.all(3)),
+                      Text('admin@cgz233.cn'),
+                    ],
+                  ))
+            ],
+          ),
+        )
+      ],
+    );
+  }
+```
+
+
+
+
+
+
+
+
 

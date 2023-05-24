@@ -1,8 +1,8 @@
 # Flutter Notes
 
-## 组件
+## Widget
 
-### Container容器组件
+### Container
 
 |名称| 功能|
 |--|--|
@@ -407,5 +407,280 @@ class MyApp extends StatelessWidget {
         children: _initListData());
   }
 }
+```
+
+### GridView
+
+|名称 |类型 |说明|
+|--|--|--|
+|scrollDirection| Axis |滚动方法|
+|padding |EdgeInsetsGeometry |内边距|
+|resolve| bool |组件反向排序|
+|crossAxisSpacing|double| 水平子Widget之间间距                 |
+|mainAxisSpacing| double |垂直子Widget之间间距|
+|crossAxisCount |int 用在GridView.count| 一行的Widget数量 |
+|maxCrossAxisExtent |double 用在GridView.extent| 横轴子元素的最大长度 |
+|childAspectRatio |double| 子Widget宽高比例|
+|childrenIstanbul| List |表格元素列表|
+|gridDelegate |SliverGridDelegateWithFixedCrossAxisCount<br/>SliverGridDelegateWithMaxCrossAxisExtent |控制布局主要用在GridView.builder里面|
+
+通过GridView.count 实现网格布局
+
+```dart
+class NewsGrid extends StatelessWidget {
+  const NewsGrid({super.key});
+
+  List<Widget> _initData() {
+    var list = newsListData.map((e) {
+      return Container(
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(10)),
+        child: Column(
+          children: [
+            // 裁切图片上方圆角，避免溢出
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(10)),
+              child: Image.network(
+                'http://192.168.1.211:10001${e['cover']}',
+                height: 135,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Text(
+              e['title'],
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            )
+          ],
+        ),
+      );
+    });
+    return list.toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      padding: const EdgeInsets.all(20),
+      // 垂直子Widget之间间距
+      mainAxisSpacing: 10,
+      // 水平子Widget之间间距
+      crossAxisSpacing: 10,
+      // 一行的Widget数量
+      crossAxisCount: 2,
+      // 子Widget宽高比例
+      childAspectRatio: 0.96,
+      children: _initData(),
+    );
+  }
+}
+```
+
+通过GridView.extent 实现网格布局
+
+```dart
+class MyApp2 extends StatelessWidget {
+  const MyApp2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.extent(
+      //横轴子元素的最大长度
+      maxCrossAxisExtent: 50,
+      children: const [
+        Icon(Icons.wallpaper),
+        Icon(Icons.dangerous),
+        Icon(Icons.safety_check),
+        Icon(Icons.label),
+        Icon(Icons.vaccines),
+        Icon(Icons.qr_code),
+        Icon(Icons.e_mobiledata),
+        Icon(Icons.r_mobiledata),
+        Icon(Icons.abc),
+        Icon(Icons.one_x_mobiledata),
+      ],
+    );
+  }
+}
+```
+
+GridView.builder实现动态网格布局
+
+```dart
+class NewsGrid extends StatelessWidget {
+  const NewsGrid({super.key});
+
+  Widget _initData(context, index) {
+    return Container(
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        children: [
+          // 裁切图片上方圆角，避免溢出
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+            child: Image.network(
+              'http://192.168.1.211:10001${newsListData[index]['cover']}',
+              height: 135,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Text(
+            newsListData[index]['title'],
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          )
+        ],
+      ),
+    );
+  }
+
+  // 使用SliverGridDelegateWithFixedCrossAxisCount
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+        itemCount: newsListData.length,
+        padding: const EdgeInsets.all(20),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          // 垂直子Widget之间间距
+          mainAxisSpacing: 10,
+          // 水平子Widget之间间距
+          crossAxisSpacing: 10,
+          // 一行的Widget数量
+          crossAxisCount: 2,
+          // 子Widget宽高比例
+          childAspectRatio: 0.97,
+        ),
+        itemBuilder: _initData);
+  }
+
+// 使用SliverGridDelegateWithMaxCrossAxisExtent
+// @override
+// Widget build(BuildContext context) {
+//   return GridView.builder(
+//       itemCount: newsListData.length,
+//       padding: const EdgeInsets.all(20),
+//       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+//         // 垂直子Widget之间间距
+//         mainAxisSpacing: 10,
+//         // 水平子Widget之间间距
+//         crossAxisSpacing: 10,
+//         maxCrossAxisExtent: 200,
+//         // 子Widget宽高比例
+//         childAspectRatio: 0.97,
+//       ),
+//       itemBuilder: _initData);
+// }
+}
+```
+
+### Padding
+
+|属性 |说明|
+|--|--|
+|padding |padding值, EdgeInsetss设置填充的值|
+|child |子组件|
+
+### Row&Column
+
+|属性| 说明|
+|--|--|
+|mainAxisAlignment |主轴的排序方式|
+|crossAxisAlignment| 次轴的排序方式|
+|children |组件子元素|
+
+double.infifinity和double.maxFinite
+
+- double.infifinity 和double.maxFinite可以让当前元素的width或者height达到父元素的尺寸
+
+```dart
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 100,
+          height: 100,
+          decoration: const BoxDecoration(color: Colors.green),
+        ),
+        Container(
+          width: 100,
+          height: 100,
+          decoration: const BoxDecoration(color: Colors.blue),
+        ),
+        Container(
+          width: 100,
+          height: 100,
+          decoration: const BoxDecoration(color: Colors.red),
+        )
+      ]
+    );
+  }
+}
+```
+
+### Flex&Expanded
+
+`Flex`组件可以沿着水平或垂直方向排列子组件，如果知道主轴方向，使用`Row`或`Column`会方便一些，因为`Row`和`Column`都继承自`Flex`，参数基本相同，所以能使用Flex的地方基本上都可以使用`Row`或`Column`，`Flex`本身功能是很强大的，它也可以和`Expanded`组件配合实现弹性布局
+
+```dart
+  @override
+  Widget build(BuildContext context) {
+    return Flex(
+      // 设置Flex的排列方向，vertical和Column类似，horizontal和Row类似
+      direction: Axis.vertical,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          height: 200,
+          decoration: const BoxDecoration(color: Colors.green),
+        ),
+        const Padding(padding: EdgeInsets.all(5)),
+        SizedBox(
+          height: 200,
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              // Expanded搭配Flex使用，flex属性可以设置在Flex中占比，类似于Android中weight属性
+              Expanded(
+                  flex: 2,
+                  child: Container(
+                    decoration: const BoxDecoration(color: Colors.blue),
+                  )),
+              const Padding(padding: EdgeInsets.all(5)),
+              Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration:
+                                const BoxDecoration(color: Colors.orange),
+                          )),
+                      const Padding(padding: EdgeInsets.all(5)),
+                      Expanded(
+                          flex: 1,
+                          child: Container(
+                            decoration: const BoxDecoration(color: Colors.red),
+                          )),
+                    ],
+                  ))
+            ],
+          ),
+        )
+      ],
+    );
+  }
 ```
 
